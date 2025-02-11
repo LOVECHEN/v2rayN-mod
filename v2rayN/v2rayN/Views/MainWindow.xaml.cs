@@ -310,6 +310,7 @@ namespace v2rayN.Views
             ShowHideWindow(false);
         }
 
+
         private void menuSettingsSetUWP_Click(object sender, RoutedEventArgs e)
         {
             ProcUtils.ProcessStart(Utils.GetBinPath("EnableLoopback.exe"));

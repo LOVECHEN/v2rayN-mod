@@ -11,6 +11,7 @@ namespace ServiceLib
         public const string SpeedPingTestUrl = @"https://www.google.com/generate_204";
         public const string SingboxRulesetUrl = @"https://raw.githubusercontent.com/2dust/sing-box-rules/rule-set-{0}/{1}.srs";
         public const string IPAPIUrl = "https://api.ip.sb/geoip";
+
         public const string ConfigFileName = "guiNConfig.json";
         public const string CoreConfigFileName = "config.json";
         public const string CorePreConfigFileName = "configPre.json";
