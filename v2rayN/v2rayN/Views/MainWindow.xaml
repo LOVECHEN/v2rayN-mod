@@ -253,7 +253,6 @@
                         </Menu>
                         <Separator />
                         <Menu Margin="0,1" Style="{StaticResource ToolbarMenu}">
-                        <Menu Margin="0,1" Style="{StaticResource ToolbarMenu}">
                             <MenuItem x:Name="menuClose" Padding="8,0">
                                 <MenuItem.Header>
                                     <StackPanel Orientation="Horizontal">
