@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -209,9 +209,6 @@
   </data>
   <data name="LvTransportProtocol" xml:space="preserve">
     <value>Протокол</value>
-  </data>
-  <data name="MsgClearSubscription" xml:space="preserve">
-    <value>Очистить контент оригинальной подписки</value>
   </data>
   <data name="MsgDownloadV2rayCoreSuccessfully" xml:space="preserve">
     <value>Ядро успешно загружено</value>
@@ -721,9 +718,6 @@
   <data name="TbSettingsExceptionTip" xml:space="preserve">
     <value>Исключение. Не используйте прокси-сервер для адресов, начинающихся с (,), используйте точку с запятой (;)</value>
   </data>
-  <data name="TbSettingsHttpPort" xml:space="preserve">
-    <value>HTTP порт</value>
-  </data>
   <data name="TbSettingsDisplayRealTimeSpeed" xml:space="preserve">
     <value>Display real-time speed</value>
   </data>
@@ -1210,9 +1204,6 @@
   <data name="menuAddTuicServer" xml:space="preserve">
     <value>Add [TUIC] server</value>
   </data>
-  <data name="UpdateStandalonePackageTip" xml:space="preserve">
-    <value>You are currently running a standalone package, please manually download the SelfContained.7z file to unzip and overwrite it!</value>
-  </data>
   <data name="TbSettingsEnableIPv6Address" xml:space="preserve">
     <value>Enable IPv6 Address</value>
   </data>
@@ -1372,8 +1363,8 @@
   <data name="TbSettingsHide2TrayWhenClose" xml:space="preserve">
     <value>Hide to tray when closing the window</value>
   </data>
-  <data name="TbSettingsSpeedTestPageSize" xml:space="preserve">
-    <value>Number per time for auto batch during speedtest(max 1000)</value>
+  <data name="TbSettingsMixedConcurrencyCount" xml:space="preserve">
+    <value>The number of concurrent during multi-test</value>
   </data>
   <data name="TbSettingsExceptionTip2" xml:space="preserve">
     <value>Exception. Do not use proxy server for addresses,with a comma (,)</value>
@@ -1395,5 +1386,14 @@
   </data>
   <data name="SpeedtestingTestFailedPart" xml:space="preserve">
     <value>Starting retesting failed parts, {0} remaining. Press ESC to terminate...</value>
+  </data>
+  <data name="menuTestServerResult" xml:space="preserve">
+    <value>By test result</value>
+  </data>
+  <data name="menuRemoveInvalidServerResult" xml:space="preserve">
+    <value>Remove invalid by test results</value>
+  </data>
+  <data name="RemoveInvalidServerResultTip" xml:space="preserve">
+    <value>Removed {0} invalid test results.</value>
   </data>
 </root>

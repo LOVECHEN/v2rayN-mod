@@ -175,10 +175,10 @@
     <value>初始化設定</value>
   </data>
   <data name="IsLatestCore" xml:space="preserve">
-    <value>{0} {1} 已是最新版本</value>
+    <value>{0} {1} 已是最新版本。</value>
   </data>
   <data name="IsLatestN" xml:space="preserve">
-    <value>{0} {1} 已是最新版本</value>
+    <value>{0} {1} 已是最新版本。</value>
   </data>
   <data name="LvAddress" xml:space="preserve">
     <value>位址</value>
@@ -209,9 +209,6 @@
   </data>
   <data name="LvTransportProtocol" xml:space="preserve">
     <value>傳輸協定</value>
-  </data>
-  <data name="MsgClearSubscription" xml:space="preserve">
-    <value>清除原訂閱內容</value>
   </data>
   <data name="MsgDownloadV2rayCoreSuccessfully" xml:space="preserve">
     <value>下載Core成功</value>
@@ -277,7 +274,7 @@
     <value>請先選擇伺服器</value>
   </data>
   <data name="RemoveDuplicateServerResult" xml:space="preserve">
-    <value>伺服器去重完成。原數量: {0}，現數量: {1}</value>
+    <value>伺服器去重完成。原數量: {0}，現數量: {1}。</value>
   </data>
   <data name="RemoveServer" xml:space="preserve">
     <value>是否確定移除伺服器？</value>
@@ -716,9 +713,6 @@
   <data name="TbSettingsExceptionTip" xml:space="preserve">
     <value>例外：對於下列字元開頭的位址，不使用代理設定檔。使用分號(;)分隔。</value>
   </data>
-  <data name="TbSettingsHttpPort" xml:space="preserve">
-    <value>本機HTTP偵聽埠</value>
-  </data>
   <data name="TbSettingsDisplayRealTimeSpeed" xml:space="preserve">
     <value>顯示即時速度（需重啟）</value>
   </data>
@@ -927,7 +921,7 @@
     <value>速度(M/s)</value>
   </data>
   <data name="FailedToRunCore" xml:space="preserve">
-    <value>執行Core失敗，請查閲日誌</value>
+    <value>執行Core失敗，請查看提示訊息</value>
   </data>
   <data name="LvFilter" xml:space="preserve">
     <value>別名正則過濾</value>
@@ -1132,9 +1126,6 @@
   </data>
   <data name="menuShowOrHideMainWindow" xml:space="preserve">
     <value>顯示或隱藏主介面</value>
-  </data>
-  <data name="UpdateStandalonePackageTip" xml:space="preserve">
-    <value>您目前運行的是獨立包，請手動下載 SelfContained.7z檔案解壓縮覆蓋！</value>
   </data>
   <data name="TbPreSocksPort4Sub" xml:space="preserve">
     <value>自訂設定的Socks連接埠</value>
@@ -1370,8 +1361,8 @@
   <data name="TbSettingsHide2TrayWhenClose" xml:space="preserve">
     <value>關閉視窗時隱藏至托盤</value>
   </data>
-  <data name="TbSettingsSpeedTestPageSize" xml:space="preserve">
-    <value>測試時自動分批的每批數量（最大1000）</value>
+  <data name="TbSettingsMixedConcurrencyCount" xml:space="preserve">
+    <value>多執行緒測試時的並發數量</value>
   </data>
   <data name="TbSettingsExceptionTip2" xml:space="preserve">
     <value>例外：對於下列位址不使用代理設定檔，使用逗號(,)分隔。</value>
@@ -1393,5 +1384,14 @@
   </data>
   <data name="SpeedtestingTestFailedPart" xml:space="preserve">
     <value>開始對失敗部分進行重新測試，剩餘 {0} 個。可按 ESC 終止...</value>
+  </data>
+  <data name="menuTestServerResult" xml:space="preserve">
+    <value>按測試結果</value>
+  </data>
+  <data name="menuRemoveInvalidServerResult" xml:space="preserve">
+    <value>按測試結果移除無效</value>
+  </data>
+  <data name="RemoveInvalidServerResultTip" xml:space="preserve">
+    <value>移除無效測試結果 {0} 個。</value>
   </data>
 </root>

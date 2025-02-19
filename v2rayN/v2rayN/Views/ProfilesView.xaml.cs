@@ -79,6 +79,7 @@ namespace v2rayN.Views
                 this.BindCommand(ViewModel, vm => vm.RealPingServerCmd, v => v.menuRealPingServer).DisposeWith(disposables);
                 this.BindCommand(ViewModel, vm => vm.SpeedServerCmd, v => v.menuSpeedServer).DisposeWith(disposables);
                 this.BindCommand(ViewModel, vm => vm.SortServerResultCmd, v => v.menuSortServerResult).DisposeWith(disposables);
+                this.BindCommand(ViewModel, vm => vm.RemoveInvalidServerResultCmd, v => v.menuRemoveInvalidServerResult).DisposeWith(disposables);
 
                 //servers export
                 this.BindCommand(ViewModel, vm => vm.Export2ClientConfigCmd, v => v.menuExport2ClientConfig).DisposeWith(disposables);
@@ -352,9 +353,9 @@ namespace v2rayN.Views
         private void StorageUI(string? n = null)
         {
             List<ColumnItem> lvColumnItem = new();
-            for (int k = 0; k < lstProfiles.Columns.Count; k++)
+            foreach (var t in lstProfiles.Columns)
             {
-                var item2 = (MyDGTextColumn)lstProfiles.Columns[k];
+                var item2 = (MyDGTextColumn)t;
                 lvColumnItem.Add(new()
                 {
                     Name = item2.ExName,

@@ -125,6 +125,10 @@ namespace ServiceLib.Handler
             {
                 config.SpeedTestItem.SpeedPingTestUrl = Global.SpeedPingTestUrl;
             }
+            if (config.SpeedTestItem.MixedConcurrencyCount < 1)
+            {
+                config.SpeedTestItem.MixedConcurrencyCount = 5;
+            }
 
             config.Mux4RayItem ??= new()
             {
@@ -290,7 +294,7 @@ namespace ServiceLib.Handler
         /// <param name="config"></param>
         /// <param name="indexes"></param>
         /// <returns></returns>
-        public static async Task<int> RemoveServer(Config config, List<ProfileItem> indexes)
+        public static async Task<int> RemoveServers(Config config, List<ProfileItem> indexes)
         {
             var subid = "TempRemoveSubId";
             foreach (var item in indexes)
@@ -299,7 +303,7 @@ namespace ServiceLib.Handler
             }
 
             await SQLiteHelper.Instance.UpdateAllAsync(indexes);
-            await RemoveServerViaSubid(config, subid, false);
+            await RemoveServersViaSubid(config, subid, false);
 
             return 0;
         }
@@ -754,9 +758,9 @@ namespace ServiceLib.Handler
                                   Security = t.Security,
                                   Network = t.Network,
                                   StreamSecurity = t.StreamSecurity,
-                                  Delay = t33 == null ? 0 : t33.Delay,
-                                  Speed = t33 == null ? 0 : t33.Speed,
-                                  Sort = t33 == null ? 0 : t33.Sort
+                                  Delay = t33?.Delay ?? 0,
+                                  Speed = t33?.Speed ?? 0,
+                                  Sort = t33?.Sort ?? 0
                               }).ToList();
 
             Enum.TryParse(colName, true, out EServerColName name);
@@ -882,7 +886,7 @@ namespace ServiceLib.Handler
                     lstRemove.Add(item);
                 }
             }
-            await RemoveServer(config, lstRemove);
+            await RemoveServers(config, lstRemove);
 
             return new Tuple<int, int>(lstProfile.Count, lstKeep.Count);
         }
@@ -1047,6 +1051,24 @@ namespace ServiceLib.Handler
             return itemSocks;
         }
 
+        public static async Task<int> RemoveInvalidServerResult(Config config, string subid)
+        {
+            var lstModel = await AppHandler.Instance.ProfileItems(subid, "");
+            if (lstModel is { Count: <= 0 })
+            {
+                return -1;
+            }
+            var lstProfileExs = await ProfileExHandler.Instance.GetProfileExs();
+            var lstProfile = (from t in lstModel
+                              join t2 in lstProfileExs on t.IndexId equals t2.IndexId
+                              where t2.Delay == -1
+                              select t).ToList();
+
+            await RemoveServers(config, JsonUtils.Deserialize<List<ProfileItem>>(JsonUtils.Serialize(lstProfile)));
+
+            return lstProfile.Count;
+        }
+
         #endregion Server
 
         #region Batch add servers
@@ -1069,7 +1091,7 @@ namespace ServiceLib.Handler
             //remove sub items
             if (isSub && Utils.IsNotEmpty(subid))
             {
-                await RemoveServerViaSubid(config, subid, isSub);
+                await RemoveServersViaSubid(config, subid, isSub);
                 subFilter = (await AppHandler.Instance.GetSubItem(subid))?.Filter ?? "";
             }
 
@@ -1163,7 +1185,7 @@ namespace ServiceLib.Handler
             {
                 if (isSub && Utils.IsNotEmpty(subid))
                 {
-                    await RemoveServerViaSubid(config, subid, isSub);
+                    await RemoveServersViaSubid(config, subid, isSub);
                 }
                 int count = 0;
                 foreach (var it in lstProfiles)
@@ -1219,7 +1241,7 @@ namespace ServiceLib.Handler
 
             if (isSub && Utils.IsNotEmpty(subid))
             {
-                await RemoveServerViaSubid(config, subid, isSub);
+                await RemoveServersViaSubid(config, subid, isSub);
             }
 
             profileItem.Subid = subid;
@@ -1244,7 +1266,7 @@ namespace ServiceLib.Handler
 
             if (isSub && Utils.IsNotEmpty(subid))
             {
-                await RemoveServerViaSubid(config, subid, isSub);
+                await RemoveServersViaSubid(config, subid, isSub);
             }
 
             var lstSsServer = ShadowsocksFmt.ResolveSip008(strData);
@@ -1431,7 +1453,7 @@ namespace ServiceLib.Handler
         /// <param name="config"></param>
         /// <param name="subid"></param>
         /// <returns></returns>
-        public static async Task<int> RemoveServerViaSubid(Config config, string subid, bool isSub)
+        public static async Task<int> RemoveServersViaSubid(Config config, string subid, bool isSub)
         {
             if (Utils.IsNullOrEmpty(subid))
             {
@@ -1462,7 +1484,7 @@ namespace ServiceLib.Handler
                 return 0;
             }
             await SQLiteHelper.Instance.DeleteAsync(item);
-            await RemoveServerViaSubid(config, id, false);
+            await RemoveServersViaSubid(config, id, false);
 
             return 0;
         }

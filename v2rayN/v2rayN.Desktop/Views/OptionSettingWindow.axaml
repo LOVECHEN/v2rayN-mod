@@ -459,6 +459,7 @@
                             Classes="Margin8" />
 
                         <TextBlock
+                            x:Name="labHide2TrayWhenClose"
                             Grid.Row="9"
                             Grid.Column="0"
                             VerticalAlignment="Center"
@@ -518,21 +519,20 @@
                             Classes="Margin8"
                             Text="{x:Static resx:ResUI.TbSettingsCurrentFontFamilyLinuxTip}"
                             TextWrapping="Wrap" />
-                        <!--
+
                         <TextBlock
                             Grid.Row="16"
                             Grid.Column="0"
                             VerticalAlignment="Center"
                             Classes="Margin8"
-                            Text="{x:Static resx:ResUI.TbSettingsSpeedTestPageSize}" />
-                        <TextBox
-                            x:Name="txtSpeedTestPageSize"
+                            Text="{x:Static resx:ResUI.TbSettingsMixedConcurrencyCount}" />
+                        <ComboBox
+                            x:Name="cmbMixedConcurrencyCount"
                             Grid.Row="16"
                             Grid.Column="1"
                             Width="200"
-                            HorizontalAlignment="Left"
                             Classes="Margin8" />
-                        -->
+
                         <TextBlock
                             Grid.Row="17"
                             Grid.Column="0"
@@ -788,6 +788,7 @@
                         Classes="Margin8" />
 
                     <TextBlock
+                        x:Name="labLinuxSudoPassword"
                         Grid.Row="7"
                         Grid.Column="0"
                         VerticalAlignment="Center"
@@ -801,6 +802,7 @@
                         HorizontalAlignment="Left"
                         Classes="Margin8" />
                     <TextBlock
+                        x:Name="labLinuxSudoPasswordTip"
                         Grid.Row="7"
                         Grid.Column="2"
                         VerticalAlignment="Center"

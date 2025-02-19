@@ -85,7 +85,8 @@ namespace v2rayN.Desktop.Views
                 this.BindCommand(ViewModel, vm => vm.RealPingServerCmd, v => v.menuRealPingServer).DisposeWith(disposables);
                 this.BindCommand(ViewModel, vm => vm.SpeedServerCmd, v => v.menuSpeedServer).DisposeWith(disposables);
                 this.BindCommand(ViewModel, vm => vm.SortServerResultCmd, v => v.menuSortServerResult).DisposeWith(disposables);
-
+                this.BindCommand(ViewModel, vm => vm.RemoveInvalidServerResultCmd, v => v.menuRemoveInvalidServerResult).DisposeWith(disposables);
+                
                 //servers export
                 this.BindCommand(ViewModel, vm => vm.Export2ClientConfigCmd, v => v.menuExport2ClientConfig).DisposeWith(disposables);
                 this.BindCommand(ViewModel, vm => vm.Export2ClientConfigClipboardCmd, v => v.menuExport2ClientConfigClipboard).DisposeWith(disposables);
@@ -371,9 +372,8 @@ namespace v2rayN.Desktop.Views
         private void StorageUI(string? n = null)
         {
             List<ColumnItem> lvColumnItem = new();
-            for (int k = 0; k < lstProfiles.Columns.Count; k++)
+            foreach (var item2 in lstProfiles.Columns)
             {
-                var item2 = lstProfiles.Columns[k];
                 if (item2.Tag == null)
                 {
                     continue;

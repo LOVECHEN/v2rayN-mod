@@ -1,7 +1,7 @@
 <Project>
 
     <PropertyGroup>
-        <Version>7.8.3</Version>
+        <Version>7.9.1</Version>
     </PropertyGroup>
 
     <PropertyGroup>
@@ -28,5 +28,6 @@
 
         <UseSystemResourceKeys>true</UseSystemResourceKeys>
         <PublishSingleFile>true</PublishSingleFile>
+        <PublishReadyToRun>false</PublishReadyToRun>
     </PropertyGroup>
 </Project>
