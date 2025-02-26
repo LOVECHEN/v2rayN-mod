@@ -12,6 +12,7 @@ using MsBox.Avalonia.Enums;
 using ReactiveUI;
 using Splat;
 using v2rayN.Desktop.Common;
+using v2rayN.Desktop.Handler;
 
 namespace v2rayN.Desktop.Views
 {
@@ -137,8 +138,7 @@ namespace v2rayN.Desktop.Views
             if (Utils.IsWindows())
             {
                 ThreadPool.RegisterWaitForSingleObject(Program.ProgramStarted, OnProgramStarted, null, -1, false);
-
-                menuGlobalHotkeySetting.IsVisible = false;
+                HotkeyHandler.Instance.Init(_config, OnHotkeyHandler);
             }
             else
             {
@@ -155,7 +155,6 @@ namespace v2rayN.Desktop.Views
 
             RestoreUI();
             AddHelpMenuItem();
-            //WindowsHandler.Instance.RegisterGlobalHotkey(_config, OnHotkeyHandler, null);
             MessageBus.Current.Listen<string>(EMsgCommand.AppExit.ToString()).Subscribe(StorageUI);
         }
 
@@ -232,6 +231,7 @@ namespace v2rayN.Desktop.Views
                     StorageUI();
                     if (Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
                     {
+                        HotkeyHandler.Instance.Dispose();
                         desktop.Shutdown();
                     }
                     break;
@@ -267,21 +267,12 @@ namespace v2rayN.Desktop.Views
                     ShowHideWindow(null);
                     break;
 
-                    //case EGlobalHotkey.SystemProxyClear:
-                    //    ViewModel?.SetListenerType(ESysProxyType.ForcedClear);
-                    //    break;
-
-                    //case EGlobalHotkey.SystemProxySet:
-                    //    ViewModel?.SetListenerType(ESysProxyType.ForcedChange);
-                    //    break;
-
-                    //case EGlobalHotkey.SystemProxyUnchanged:
-                    //    ViewModel?.SetListenerType(ESysProxyType.Unchanged);
-                    //    break;
-
-                    //case EGlobalHotkey.SystemProxyPac:
-                    //    ViewModel?.SetListenerType(ESysProxyType.Pac);
-                    //    break;
+                case EGlobalHotkey.SystemProxyClear:
+                case EGlobalHotkey.SystemProxySet:
+                case EGlobalHotkey.SystemProxyUnchanged:
+                case EGlobalHotkey.SystemProxyPac:
+                    Locator.Current.GetService<StatusBarViewModel>()?.SetListenerType((ESysProxyType)((int)e - 1));
+                    break;
             }
         }
 
