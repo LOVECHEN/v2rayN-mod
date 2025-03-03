@@ -217,6 +217,7 @@ namespace ServiceLib.Handler
                 item.Remarks = profileItem.Remarks;
                 item.Address = profileItem.Address;
                 item.Port = profileItem.Port;
+                item.Ports = profileItem.Ports;
 
                 item.Id = profileItem.Id;
                 item.AlterId = profileItem.AlterId;
@@ -725,7 +726,7 @@ namespace ServiceLib.Handler
             profileItem.Network = string.Empty;
             if (profileItem.ShortId.IsNullOrEmpty())
             {
-                profileItem.ShortId = Global.TunMtus.FirstOrDefault();
+                profileItem.ShortId = Global.TunMtus.First().ToString();
             }
 
             if (profileItem.Id.IsNullOrEmpty())

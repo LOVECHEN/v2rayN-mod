@@ -1326,7 +1326,7 @@
     <value>Reserved(2,3,4)</value>
   </data>
   <data name="TbLocalAddress" xml:space="preserve">
-    <value>Address(Ip,Ipv6)</value>
+    <value>Address(Ipv4,Ipv6)</value>
   </data>
   <data name="TbSettingsUseSystemHosts" xml:space="preserve">
     <value>使用系統hosts</value>
@@ -1393,5 +1393,11 @@
   </data>
   <data name="RemoveInvalidServerResultTip" xml:space="preserve">
     <value>移除無效測試結果 {0} 個。</value>
+  </data>
+  <data name="TbPorts7" xml:space="preserve">
+    <value>跳躍端口範圍</value>
+  </data>
+  <data name="TbPorts7Tips" xml:space="preserve">
+    <value>會覆蓋端口，多組時用逗號(,)隔開</value>
   </data>
 </root>

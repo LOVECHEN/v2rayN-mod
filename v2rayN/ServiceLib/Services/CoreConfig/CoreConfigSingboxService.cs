@@ -599,7 +599,7 @@ namespace ServiceLib.Services.CoreConfig
                 {
                     if (_config.TunModeItem.Mtu <= 0)
                     {
-                        _config.TunModeItem.Mtu = Utils.ToInt(Global.TunMtus.First());
+                        _config.TunModeItem.Mtu = Global.TunMtus.First();
                     }
                     if (Utils.IsNullOrEmpty(_config.TunModeItem.Stack))
                     {
@@ -730,6 +730,16 @@ namespace ServiceLib.Services.CoreConfig
 
                             outbound.up_mbps = _config.HysteriaItem.UpMbps > 0 ? _config.HysteriaItem.UpMbps : null;
                             outbound.down_mbps = _config.HysteriaItem.DownMbps > 0 ? _config.HysteriaItem.DownMbps : null;
+                            if (node.Ports.IsNotEmpty())
+                            {
+                                outbound.server_port = null;
+                                outbound.server_ports = node.Ports.Split(',')
+                                    .Where(p => p.Trim().IsNotEmpty())
+                                    .Select(p => p.Replace('-', ':'))
+                                    .ToList();
+                                outbound.hop_interval = _config.HysteriaItem.HopInterval > 0 ? $"{_config.HysteriaItem.HopInterval}s" : null;
+                            }
+
                             break;
                         }
                     case EConfigType.TUIC:
@@ -745,7 +755,7 @@ namespace ServiceLib.Services.CoreConfig
                             outbound.peer_public_key = node.PublicKey;
                             outbound.reserved = Utils.String2List(node.Path)?.Select(int.Parse).ToList();
                             outbound.local_address = Utils.String2List(node.RequestHost);
-                            outbound.mtu = Utils.ToInt(node.ShortId.IsNullOrEmpty() ? Global.TunMtus.FirstOrDefault() : node.ShortId);
+                            outbound.mtu = Utils.ToInt(node.ShortId.IsNullOrEmpty() ? Global.TunMtus.First() : node.ShortId);
                             break;
                         }
                 }
