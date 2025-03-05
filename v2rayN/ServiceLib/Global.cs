@@ -264,7 +264,8 @@ namespace ServiceLib
             "utp",
             "wechat-video",
             "dtls",
-            "wireguard"
+            "wireguard",
+            "dns"
         ];
 
         public static readonly List<string> CoreTypes =
