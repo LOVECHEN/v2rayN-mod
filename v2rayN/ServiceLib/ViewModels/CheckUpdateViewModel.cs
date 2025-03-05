@@ -45,7 +45,6 @@ namespace ServiceLib.ViewModels
 
             if (RuntimeInformation.ProcessArchitecture != Architecture.X86)
             {
-                _checkUpdateModel.Add(GetCheckUpdateModel(_v2rayN));
                 //Not Windows and under Win10
                 if (!(Utils.IsWindows() && Environment.OSVersion.Version.Major < 10))
                 {
