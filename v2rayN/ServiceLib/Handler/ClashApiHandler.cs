@@ -11,9 +11,9 @@ namespace ServiceLib.Handler
         private Dictionary<string, ProxiesItem>? _proxies;
         public Dictionary<string, object> ProfileContent { get; set; }
 
-        public async Task<Tuple<ClashProxies, ClashProviders>?> GetClashProxiesAsync(Config config)
+        public async Task<Tuple<ClashProxies, ClashProviders>?> GetClashProxiesAsync()
         {
-            for (var i = 0; i < 5; i++)
+            for (var i = 0; i < 3; i++)
             {
                 var url = $"{GetApiUrl()}/proxies";
                 var result = await HttpClientHelper.Instance.TryGetAsync(url);
@@ -37,38 +37,30 @@ namespace ServiceLib.Handler
 
         public void ClashProxiesDelayTest(bool blAll, List<ClashProxyModel> lstProxy, Action<ClashProxyModel?, string> updateFunc)
         {
-            Task.Run(() =>
+            Task.Run(async () =>
             {
                 if (blAll)
                 {
-                    for (var i = 0; i < 5; i++)
-                    {
-                        if (_proxies != null)
-                        {
-                            break;
-                        }
-                        Task.Delay(5000).Wait();
-                    }
                     if (_proxies == null)
                     {
-                        return;
+                        await GetClashProxiesAsync();
                     }
                     lstProxy = new List<ClashProxyModel>();
-                    foreach (var kv in _proxies)
+                    foreach (var kv in _proxies ?? [])
                     {
-                        if (Global.notAllowTestType.Contains(kv.Value.type.ToLower()))
+                        if (Global.notAllowTestType.Contains(kv.Value.type?.ToLower()))
                         {
                             continue;
                         }
                         lstProxy.Add(new ClashProxyModel()
                         {
                             Name = kv.Value.name,
-                            Type = kv.Value.type.ToLower(),
+                            Type = kv.Value.type?.ToLower(),
                         });
                     }
                 }
 
-                if (lstProxy == null)
+                if (lstProxy is not { Count: > 0 })
                 {
                     return;
                 }
@@ -90,9 +82,8 @@ namespace ServiceLib.Handler
                         updateFunc?.Invoke(it, result);
                     }));
                 }
-                Task.WaitAll(tasks.ToArray());
-
-                Task.Delay(1000).Wait();
+                await Task.WhenAll(tasks);
+                await Task.Delay(1000);
                 updateFunc?.Invoke(null, "");
             });
         }
@@ -158,7 +149,7 @@ namespace ServiceLib.Handler
             }
         }
 
-        public async Task<ClashConnections?> GetClashConnectionsAsync(Config config)
+        public async Task<ClashConnections?> GetClashConnectionsAsync()
         {
             try
             {
