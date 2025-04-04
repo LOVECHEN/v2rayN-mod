@@ -81,11 +81,11 @@
                 BorderThickness="1"
                 CanUserReorderColumns="True"
                 CanUserResizeColumns="True"
+                Classes.InsetContent="True"
                 GridLinesVisibility="All"
                 HeadersVisibility="All"
                 IsReadOnly="True"
-                ItemsSource="{Binding ProfileItems}"
-                ScrollViewer.AllowAutoHide="False">
+                ItemsSource="{Binding ProfileItems}">
                 <DataGrid.KeyBindings>
                     <KeyBinding Command="{Binding Export2ShareUrlCmd}" Gesture="Ctrl+C" />
                     <KeyBinding Command="{Binding SetDefaultServerCmd}" Gesture="Enter" />
@@ -99,8 +99,14 @@
                         <MenuItem x:Name="menuCopyServer" Header="{x:Static resx:ResUI.menuCopyServer}" />
                         <MenuItem x:Name="menuShareServer" Header="{x:Static resx:ResUI.menuShareServer}" />
                         <Separator />
-                        <MenuItem x:Name="menuSetDefaultMultipleServer" Header="{x:Static resx:ResUI.menuSetDefaultMultipleServer}" />
-                        <MenuItem x:Name="menuSetDefaultLoadBalanceServer" Header="{x:Static resx:ResUI.menuSetDefaultLoadBalanceServer}" />
+                        <MenuItem Header="{x:Static resx:ResUI.menuSetDefaultMultipleServer}">
+                            <MenuItem x:Name="menuSetDefaultMultipleServerXrayRandom" Header="{x:Static resx:ResUI.menuSetDefaultMultipleServerXrayRandom}" />
+                            <MenuItem x:Name="menuSetDefaultMultipleServerXrayRoundRobin" Header="{x:Static resx:ResUI.menuSetDefaultMultipleServerXrayRoundRobin}" />
+                            <MenuItem x:Name="menuSetDefaultMultipleServerXrayLeastPing" Header="{x:Static resx:ResUI.menuSetDefaultMultipleServerXrayLeastPing}" />
+                            <MenuItem x:Name="menuSetDefaultMultipleServerXrayLeastLoad" Header="{x:Static resx:ResUI.menuSetDefaultMultipleServerXrayLeastLoad}" />
+                            <Separator />
+                            <MenuItem x:Name="menuSetDefaultMultipleServerSingBoxLeastPing" Header="{x:Static resx:ResUI.menuSetDefaultMultipleServerSingBoxLeastPing}" />
+                        </MenuItem>
                         <Separator />
                         <MenuItem x:Name="menuMixedTestServer" Header="{x:Static resx:ResUI.menuMixedTestServer}" />
                         <MenuItem x:Name="menuTcpingServer" Header="{x:Static resx:ResUI.menuTcpingServer}" />
@@ -133,11 +139,10 @@
                         </MenuItem>
                         <MenuItem x:Name="menuSelectAll" Header="{x:Static resx:ResUI.menuSelectAll}" />
                         <Separator />
-                        <MenuItem Header="{x:Static resx:ResUI.menuExport2ClientConfig}">
+                        <MenuItem Header="{x:Static resx:ResUI.menuExportConfig}">
                             <MenuItem x:Name="menuExport2ClientConfig" Header="{x:Static resx:ResUI.menuExport2ClientConfig}" />
                             <MenuItem x:Name="menuExport2ClientConfigClipboard" Header="{x:Static resx:ResUI.menuExport2ClientConfigClipboard}" />
-                        </MenuItem>
-                        <MenuItem Header="{x:Static resx:ResUI.menuExport2ShareUrl}">
+                            <Separator />
                             <MenuItem x:Name="menuExport2ShareUrl" Header="{x:Static resx:ResUI.menuExport2ShareUrl}" />
                             <MenuItem x:Name="menuExport2ShareUrlBase64" Header="{x:Static resx:ResUI.menuExport2ShareUrlBase64}" />
                         </MenuItem>

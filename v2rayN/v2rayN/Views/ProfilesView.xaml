@@ -120,15 +120,29 @@
                             Height="{StaticResource MenuItemHeight}"
                             Header="{x:Static resx:ResUI.menuShareServer}" />
                         <Separator />
-                        <MenuItem
-                            x:Name="menuSetDefaultMultipleServer"
-                            Height="{StaticResource MenuItemHeight}"
-                            Header="{x:Static resx:ResUI.menuSetDefaultMultipleServer}" />
-
-                        <MenuItem
-                            x:Name="menuSetDefaultLoadBalanceServer"
-                            Height="{StaticResource MenuItemHeight}"
-                            Header="{x:Static resx:ResUI.menuSetDefaultLoadBalanceServer}" />
+                        <MenuItem Header="{x:Static resx:ResUI.menuSetDefaultMultipleServer}">
+                            <MenuItem
+                                x:Name="menuSetDefaultMultipleServerXrayRandom"
+                                Height="{StaticResource MenuItemHeight}"
+                                Header="{x:Static resx:ResUI.menuSetDefaultMultipleServerXrayRandom}" />
+                            <MenuItem
+                                x:Name="menuSetDefaultMultipleServerXrayRoundRobin"
+                                Height="{StaticResource MenuItemHeight}"
+                                Header="{x:Static resx:ResUI.menuSetDefaultMultipleServerXrayRoundRobin}" />
+                            <MenuItem
+                                x:Name="menuSetDefaultMultipleServerXrayLeastPing"
+                                Height="{StaticResource MenuItemHeight}"
+                                Header="{x:Static resx:ResUI.menuSetDefaultMultipleServerXrayLeastPing}" />
+                            <MenuItem
+                                x:Name="menuSetDefaultMultipleServerXrayLeastLoad"
+                                Height="{StaticResource MenuItemHeight}"
+                                Header="{x:Static resx:ResUI.menuSetDefaultMultipleServerXrayLeastLoad}" />
+                            <Separator />
+                            <MenuItem
+                                x:Name="menuSetDefaultMultipleServerSingBoxLeastPing"
+                                Height="{StaticResource MenuItemHeight}"
+                                Header="{x:Static resx:ResUI.menuSetDefaultMultipleServerSingBoxLeastPing}" />
+                        </MenuItem>
                         <Separator />
                         <MenuItem
                             x:Name="menuMixedTestServer"
@@ -198,7 +212,7 @@
                             Height="{StaticResource MenuItemHeight}"
                             Header="{x:Static resx:ResUI.menuSelectAll}" />
                         <Separator />
-                        <MenuItem Header="{x:Static resx:ResUI.menuExport2ClientConfig}">
+                        <MenuItem Header="{x:Static resx:ResUI.menuExportConfig}">
                             <MenuItem
                                 x:Name="menuExport2ClientConfig"
                                 Height="{StaticResource MenuItemHeight}"
@@ -207,8 +221,7 @@
                                 x:Name="menuExport2ClientConfigClipboard"
                                 Height="{StaticResource MenuItemHeight}"
                                 Header="{x:Static resx:ResUI.menuExport2ClientConfigClipboard}" />
-                        </MenuItem>
-                        <MenuItem Header="{x:Static resx:ResUI.menuExport2ShareUrl}">
+                            <Separator />
                             <MenuItem
                                 x:Name="menuExport2ShareUrl"
                                 Height="{StaticResource MenuItemHeight}"
