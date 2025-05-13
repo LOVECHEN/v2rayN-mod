@@ -979,26 +979,6 @@ public class CoreConfigSingboxService
         try
         {
             var dnsOutbound = "dns_out";
-            if (!_config.Inbound.First().SniffingEnabled)
-            {
-                singboxConfig.route.rules.Add(new()
-                {
-                    port = [53],
-                    network = ["udp"],
-                    outbound = dnsOutbound
-                });
-            }
-
-            singboxConfig.route.rules.Insert(0, new()
-            {
-                outbound = Global.DirectTag,
-                clash_mode = ERuleMode.Direct.ToString()
-            });
-            singboxConfig.route.rules.Insert(0, new()
-            {
-                outbound = Global.ProxyTag,
-                clash_mode = ERuleMode.Global.ToString()
-            });
 
             if (_config.TunModeItem.EnableTun)
             {
@@ -1024,6 +1004,27 @@ public class CoreConfigSingboxService
                     process_name = lstDirectExe
                 });
             }
+
+            if (!_config.Inbound.First().SniffingEnabled)
+            {
+                singboxConfig.route.rules.Add(new()
+                {
+                    port = [53],
+                    network = ["udp"],
+                    outbound = dnsOutbound
+                });
+            }
+
+            singboxConfig.route.rules.Add(new()
+            {
+                outbound = Global.DirectTag,
+                clash_mode = ERuleMode.Direct.ToString()
+            });
+            singboxConfig.route.rules.Add(new()
+            {
+                outbound = Global.ProxyTag,
+                clash_mode = ERuleMode.Global.ToString()
+            });
 
             var routing = await ConfigHandler.GetDefaultRouting(_config);
             if (routing != null)
@@ -1087,14 +1088,11 @@ public class CoreConfigSingboxService
 
             if (item.Port.IsNotEmpty())
             {
-                if (item.Port.Contains("-"))
-                {
-                    rule.port_range = new List<string> { item.Port.Replace("-", ":") };
-                }
-                else
-                {
-                    rule.port = new List<int> { item.Port.ToInt() };
-                }
+                var portRanges = item.Port.Split(',').Where(it => it.Contains('-')).Select(it => it.Replace("-", ":")).ToList();
+                var ports = item.Port.Split(',').Where(it => !it.Contains('-')).Select(it => it.ToInt()).ToList();
+
+                rule.port_range = portRanges.Count > 0 ? portRanges : null;
+                rule.port = ports.Count > 0 ? ports : null;
             }
             if (item.Network.IsNotEmpty())
             {
