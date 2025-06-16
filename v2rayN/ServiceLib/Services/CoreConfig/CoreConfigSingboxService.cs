@@ -1048,28 +1048,30 @@ public class CoreConfigSingboxService
 
     private void GenRoutingDirectExe(out List<string> lstDnsExe, out List<string> lstDirectExe)
     {
-        lstDnsExe = new();
-        lstDirectExe = new();
-        var coreInfo = CoreInfoHandler.Instance.GetCoreInfo();
-        foreach (var it in coreInfo)
+        var dnsExeSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        var directExeSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+        var coreInfoResult = CoreInfoHandler.Instance.GetCoreInfo();
+
+        foreach (var coreConfig in coreInfoResult)
         {
-            if (it.CoreType == ECoreType.v2rayN)
+            if (coreConfig.CoreType == ECoreType.v2rayN)
             {
                 continue;
             }
-            foreach (var it2 in it.CoreExes)
-            {
-                if (!lstDnsExe.Contains(it2) && it.CoreType != ECoreType.sing_box)
-                {
-                    lstDnsExe.Add($"{it2}.exe");
-                }
 
-                if (!lstDirectExe.Contains(it2))
+            foreach (var baseExeName in coreConfig.CoreExes)
+            {
+                if (coreConfig.CoreType != ECoreType.sing_box)
                 {
-                    lstDirectExe.Add($"{it2}.exe");
+                    dnsExeSet.Add(Utils.GetExeName(baseExeName));
                 }
+                directExeSet.Add(Utils.GetExeName(baseExeName));
             }
         }
+
+        lstDnsExe = new List<string>(dnsExeSet);
+        lstDirectExe = new List<string>(directExeSet);
     }
 
     private async Task<int> GenRoutingUserRule(RulesItem item, List<Rule4Sbox> rules)
@@ -1149,7 +1151,7 @@ public class CoreConfigSingboxService
             }
 
             if (!hasDomainIp
-                && (rule.port != null || rule.port_range != null || rule.protocol != null || rule.inbound != null))
+                && (rule.port != null || rule.port_range != null || rule.protocol != null || rule.inbound != null || rule.network != null))
             {
                 rules.Add(rule);
             }

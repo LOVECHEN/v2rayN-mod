@@ -328,7 +328,7 @@ public class CoreConfigV2rayService
                 {
                     listen = Global.Loopback,
                     port = port,
-                    protocol = EInboundProtocol.socks.ToString(),
+                    protocol = EInboundProtocol.mixed.ToString(),
                 };
                 inbound.tag = inbound.protocol + inbound.port.ToString();
                 v2rayConfig.inbounds.Add(inbound);
@@ -403,7 +403,7 @@ public class CoreConfigV2rayService
                 tag = $"{EInboundProtocol.socks}{port}",
                 listen = Global.Loopback,
                 port = port,
-                protocol = EInboundProtocol.socks.ToString(),
+                protocol = EInboundProtocol.mixed.ToString(),
             });
 
             ret.Msg = string.Format(ResUI.SuccessfulConfiguration, "");
@@ -507,7 +507,7 @@ public class CoreConfigV2rayService
         }
         inbound.tag = protocol.ToString();
         inbound.port = inItem.LocalPort + (int)protocol;
-        inbound.protocol = EInboundProtocol.socks.ToString();
+        inbound.protocol = EInboundProtocol.mixed.ToString();
         inbound.settings.udp = inItem.UdpEnabled;
         inbound.sniffing.enabled = inItem.SniffingEnabled;
         inbound.sniffing.destOverride = inItem.DestOverride;
@@ -614,6 +614,7 @@ public class CoreConfigV2rayService
                 if (rule.port.IsNotEmpty()
                     || rule.protocol?.Count > 0
                     || rule.inboundTag?.Count > 0
+                    || rule.network != null
                     )
                 {
                     var it = JsonUtils.DeepCopy(rule);
@@ -1365,15 +1366,31 @@ public class CoreConfigV2rayService
 
     private async Task<int> GenBalancer(V2rayConfig v2rayConfig, EMultipleLoad multipleLoad)
     {
-        if (multipleLoad is EMultipleLoad.LeastLoad or EMultipleLoad.LeastPing)
+        if (multipleLoad == EMultipleLoad.LeastPing)
         {
             var observatory = new Observatory4Ray
             {
                 subjectSelector = [Global.ProxyTag],
                 probeUrl = AppHandler.Instance.Config.SpeedTestItem.SpeedPingTestUrl,
-                probeInterval = "3m"
+                probeInterval = "3m",
+                enableConcurrency = true,
             };
             v2rayConfig.observatory = observatory;
+        }
+        else if (multipleLoad == EMultipleLoad.LeastLoad)
+        {
+            var burstObservatory = new BurstObservatory4Ray
+            {
+                subjectSelector = [Global.ProxyTag],
+                pingConfig = new()
+                {
+                    destination = AppHandler.Instance.Config.SpeedTestItem.SpeedPingTestUrl,
+                    interval = "5m",
+                    timeout = "30s",
+                    sampling = 2,
+                }
+            };
+            v2rayConfig.burstObservatory = burstObservatory;
         }
         var strategyType = multipleLoad switch
         {
