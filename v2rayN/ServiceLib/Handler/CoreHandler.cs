@@ -280,20 +280,15 @@ public class CoreHandler
 
         if (displayLog)
         {
-            proc.OutputDataReceived += (sender, e) =>
+            void dataHandler(object sender, DataReceivedEventArgs e)
             {
                 if (e.Data.IsNotEmpty())
                 {
                     UpdateFunc(false, e.Data + Environment.NewLine);
                 }
-            };
-            proc.ErrorDataReceived += (sender, e) =>
-            {
-                if (e.Data.IsNotEmpty())
-                {
-                    UpdateFunc(false, e.Data + Environment.NewLine);
-                }
-            };
+            }
+            proc.OutputDataReceived += dataHandler;
+            proc.ErrorDataReceived += dataHandler;
         }
         proc.Start();
 

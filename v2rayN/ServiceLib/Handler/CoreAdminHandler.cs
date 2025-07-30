@@ -20,6 +20,8 @@ public class CoreAdminHandler
         }
         _config = config;
         _updateFunc = updateFunc;
+
+        await Task.CompletedTask;
     }
 
     private void UpdateFunc(bool notify, string msg)
@@ -44,33 +46,26 @@ public class CoreAdminHandler
                 RedirectStandardOutput = true,
                 RedirectStandardError = true,
                 CreateNoWindow = true,
-                StandardInputEncoding = Encoding.UTF8,
                 StandardOutputEncoding = Encoding.UTF8,
                 StandardErrorEncoding = Encoding.UTF8,
             }
         };
 
-        proc.OutputDataReceived += (sender, e) =>
+        void dataHandler(object sender, DataReceivedEventArgs e)
         {
             if (e.Data.IsNotEmpty())
             {
                 UpdateFunc(false, e.Data + Environment.NewLine);
             }
-        };
-        proc.ErrorDataReceived += (sender, e) =>
-        {
-            if (e.Data.IsNotEmpty())
-            {
-                UpdateFunc(false, e.Data + Environment.NewLine);
-            }
-        };
+        }
+
+        proc.OutputDataReceived += dataHandler;
+        proc.ErrorDataReceived += dataHandler;
 
         proc.Start();
         proc.BeginOutputReadLine();
         proc.BeginErrorReadLine();
 
-        await Task.Delay(10);
-        await proc.StandardInput.WriteLineAsync();
         await Task.Delay(10);
         await proc.StandardInput.WriteLineAsync(AppHandler.Instance.LinuxSudoPwd);
 

@@ -1,9 +1,10 @@
+using ReactiveUI;
 using SQLite;
 
 namespace ServiceLib.Models;
 
 [Serializable]
-public class ProfileItem
+public class ProfileItem : ReactiveObject
 {
     public ProfileItem()
     {
@@ -31,7 +32,7 @@ public class ProfileItem
     public string GetSummary()
     {
         var summary = $"[{(ConfigType).ToString()}] ";
-        var arrAddr = Address.Split('.');
+        var arrAddr = Address.Contains(':') ? Address.Split(':') : Address.Split('.');
         var addr = arrAddr.Length switch
         {
             > 2 => $"{arrAddr.First()}***{arrAddr.Last()}",
@@ -93,4 +94,5 @@ public class ProfileItem
     public string ShortId { get; set; }
     public string SpiderX { get; set; }
     public string Extra { get; set; }
+    public bool? MuxEnabled { get; set; }
 }
