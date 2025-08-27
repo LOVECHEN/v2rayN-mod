@@ -7,6 +7,7 @@ using System.Windows.Media;
 using System.Windows.Threading;
 using MaterialDesignThemes.Wpf;
 using ReactiveUI;
+using ServiceLib.Manager;
 using Splat;
 using v2rayN.Base;
 using Point = System.Windows.Point;
@@ -22,7 +23,7 @@ public partial class ProfilesView
         InitializeComponent();
         lstGroup.MaxHeight = Math.Floor(SystemParameters.WorkArea.Height * 0.20 / 40) * 40;
 
-        _config = AppHandler.Instance.Config;
+        _config = AppManager.Instance.Config;
 
         btnAutofitColumnWidth.Click += BtnAutofitColumnWidth_Click;
         txtServerFilter.PreviewKeyDown += TxtServerFilter_PreviewKeyDown;
@@ -179,7 +180,7 @@ public partial class ProfilesView
 
     public async void ShareServer(string url)
     {
-        var img = QRCodeHelper.GetQRCode(url);
+        var img = QRCodeUtils.GetQRCode(url);
         var dialog = new QrcodeView()
         {
             imgQrcode = { Source = img },

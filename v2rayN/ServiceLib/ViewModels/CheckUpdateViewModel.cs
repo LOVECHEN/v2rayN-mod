@@ -21,7 +21,7 @@ public class CheckUpdateViewModel : MyReactiveObject
 
     public CheckUpdateViewModel(Func<EViewAction, object?, Task<bool>>? updateView)
     {
-        _config = AppHandler.Instance.Config;
+        _config = AppManager.Instance.Config;
         _updateView = updateView;
 
         CheckUpdateCmd = ReactiveCommand.CreateFromTask(async () =>
@@ -74,10 +74,7 @@ public class CheckUpdateViewModel : MyReactiveObject
 
     private async Task CheckUpdate()
     {
-        await Task.Run(async () =>
-        {
-            await CheckUpdateTask();
-        });
+        await Task.Run(CheckUpdateTask);
     }
 
     private async Task CheckUpdateTask()

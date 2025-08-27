@@ -2,6 +2,7 @@ using Avalonia.Controls;
 using Avalonia.Threading;
 using CliWrap.Buffered;
 using DialogHostAvalonia;
+using ServiceLib.Manager;
 
 namespace v2rayN.Desktop.Views;
 
@@ -46,7 +47,7 @@ public partial class SudoPasswordInputView : UserControl
             else
             {
                 // Password verification failed, display error and let user try again
-                NoticeHandler.Instance.Enqueue(ResUI.SudoIncorrectPasswordTip);
+                NoticeManager.Instance.Enqueue(ResUI.SudoIncorrectPasswordTip);
                 txtPassword.Focus();
             }
         }
@@ -66,8 +67,7 @@ public partial class SudoPasswordInputView : UserControl
         {
             // Use sudo echo command to verify password
             var arg = new List<string>() { "-c", "sudo -S echo SUDO_CHECK" };
-            var result = await CliWrap.Cli
-                .Wrap(Global.LinuxBash)
+            var result = await CliWrap.Cli.Wrap(Global.LinuxBash)
                 .WithArguments(arg)
                 .WithStandardInputPipe(CliWrap.PipeSource.FromString(password))
                 .ExecuteBufferedAsync();

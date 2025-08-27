@@ -9,10 +9,11 @@ using Avalonia.Threading;
 using DialogHostAvalonia;
 using MsBox.Avalonia.Enums;
 using ReactiveUI;
+using ServiceLib.Manager;
 using Splat;
 using v2rayN.Desktop.Base;
 using v2rayN.Desktop.Common;
-using v2rayN.Desktop.Handler;
+using v2rayN.Desktop.Manager;
 
 namespace v2rayN.Desktop.Views;
 
@@ -28,7 +29,7 @@ public partial class MainWindow : WindowBase<MainWindowViewModel>
     {
         InitializeComponent();
 
-        _config = AppHandler.Instance.Config;
+        _config = AppManager.Instance.Config;
         _manager = new WindowNotificationManager(TopLevel.GetTopLevel(this)) { MaxItems = 3, Position = NotificationPosition.TopRight };
 
         this.KeyDown += MainWindow_KeyDown;
@@ -82,6 +83,7 @@ public partial class MainWindow : WindowBase<MainWindowViewModel>
             this.BindCommand(ViewModel, vm => vm.AddHysteria2ServerCmd, v => v.menuAddHysteria2Server).DisposeWith(disposables);
             this.BindCommand(ViewModel, vm => vm.AddTuicServerCmd, v => v.menuAddTuicServer).DisposeWith(disposables);
             this.BindCommand(ViewModel, vm => vm.AddWireguardServerCmd, v => v.menuAddWireguardServer).DisposeWith(disposables);
+            this.BindCommand(ViewModel, vm => vm.AddAnytlsServerCmd, v => v.menuAddAnytlsServer).DisposeWith(disposables);
             this.BindCommand(ViewModel, vm => vm.AddCustomServerCmd, v => v.menuAddCustomServer).DisposeWith(disposables);
             this.BindCommand(ViewModel, vm => vm.AddServerViaClipboardCmd, v => v.menuAddServerViaClipboard).DisposeWith(disposables);
             this.BindCommand(ViewModel, vm => vm.AddServerViaScanCmd, v => v.menuAddServerViaScan).DisposeWith(disposables);
@@ -98,6 +100,7 @@ public partial class MainWindow : WindowBase<MainWindowViewModel>
             this.BindCommand(ViewModel, vm => vm.OptionSettingCmd, v => v.menuOptionSetting).DisposeWith(disposables);
             this.BindCommand(ViewModel, vm => vm.RoutingSettingCmd, v => v.menuRoutingSetting).DisposeWith(disposables);
             this.BindCommand(ViewModel, vm => vm.DNSSettingCmd, v => v.menuDNSSetting).DisposeWith(disposables);
+            this.BindCommand(ViewModel, vm => vm.FullConfigTemplateCmd, v => v.menuFullConfigTemplate).DisposeWith(disposables);
             this.BindCommand(ViewModel, vm => vm.GlobalHotkeySettingCmd, v => v.menuGlobalHotkeySetting).DisposeWith(disposables);
             this.BindCommand(ViewModel, vm => vm.RebootAsAdminCmd, v => v.menuRebootAsAdmin).DisposeWith(disposables);
             this.BindCommand(ViewModel, vm => vm.ClearServerStatisticsCmd, v => v.menuClearServerStatistics).DisposeWith(disposables);
@@ -139,7 +142,7 @@ public partial class MainWindow : WindowBase<MainWindowViewModel>
             this.Title = $"{Utils.GetVersion()} - {(Utils.IsAdministrator() ? ResUI.RunAsAdmin : ResUI.NotRunAsAdmin)}";
 
             ThreadPool.RegisterWaitForSingleObject(Program.ProgramStarted, OnProgramStarted, null, -1, false);
-            HotkeyHandler.Instance.Init(_config, OnHotkeyHandler);
+            HotkeyManager.Instance.Init(_config, OnHotkeyHandler);
         }
         else
         {
@@ -188,6 +191,9 @@ public partial class MainWindow : WindowBase<MainWindowViewModel>
             case EViewAction.DNSSettingWindow:
                 return await new DNSSettingWindow().ShowDialog<bool>(this);
 
+            case EViewAction.FullConfigTemplateWindow:
+                return await new FullConfigTemplateWindow().ShowDialog<bool>(this);
+
             case EViewAction.RoutingSettingWindow:
                 return await new RoutingSettingWindow().ShowDialog<bool>(this);
 
@@ -228,7 +234,7 @@ public partial class MainWindow : WindowBase<MainWindowViewModel>
                 StorageUI();
                 if (Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
                 {
-                    HotkeyHandler.Instance.Dispose();
+                    HotkeyManager.Instance.Dispose();
                     desktop.Shutdown();
                 }
                 break;
@@ -341,7 +347,7 @@ public partial class MainWindow : WindowBase<MainWindowViewModel>
     {
         //ShowHideWindow(false);
 
-        NoticeHandler.Instance.SendMessageAndEnqueue("Not yet implemented.(还未实现)");
+        NoticeManager.Instance.SendMessageAndEnqueue("Not yet implemented.(还未实现)");
         await Task.CompletedTask;
         //if (Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         //{
@@ -467,7 +473,7 @@ public partial class MainWindow : WindowBase<MainWindowViewModel>
 
     private void AddHelpMenuItem()
     {
-        var coreInfo = CoreInfoHandler.Instance.GetCoreInfo();
+        var coreInfo = CoreInfoManager.Instance.GetCoreInfo();
         foreach (var it in coreInfo
             .Where(t => t.CoreType != ECoreType.v2fly
                         && t.CoreType != ECoreType.hysteria))

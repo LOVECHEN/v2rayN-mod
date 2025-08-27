@@ -8,8 +8,9 @@ using System.Windows.Media;
 using System.Windows.Threading;
 using MaterialDesignThemes.Wpf;
 using ReactiveUI;
+using ServiceLib.Manager;
 using Splat;
-using v2rayN.Handler;
+using v2rayN.Manager;
 
 namespace v2rayN.Views;
 
@@ -23,7 +24,7 @@ public partial class MainWindow
     {
         InitializeComponent();
 
-        _config = AppHandler.Instance.Config;
+        _config = AppManager.Instance.Config;
         ThreadPool.RegisterWaitForSingleObject(App.ProgramStarted, OnProgramStarted, null, -1, false);
 
         App.Current.SessionEnding += Current_SessionEnding;
@@ -79,6 +80,7 @@ public partial class MainWindow
             this.BindCommand(ViewModel, vm => vm.AddHysteria2ServerCmd, v => v.menuAddHysteria2Server).DisposeWith(disposables);
             this.BindCommand(ViewModel, vm => vm.AddTuicServerCmd, v => v.menuAddTuicServer).DisposeWith(disposables);
             this.BindCommand(ViewModel, vm => vm.AddWireguardServerCmd, v => v.menuAddWireguardServer).DisposeWith(disposables);
+            this.BindCommand(ViewModel, vm => vm.AddAnytlsServerCmd, v => v.menuAddAnytlsServer).DisposeWith(disposables);
             this.BindCommand(ViewModel, vm => vm.AddCustomServerCmd, v => v.menuAddCustomServer).DisposeWith(disposables);
             this.BindCommand(ViewModel, vm => vm.AddServerViaClipboardCmd, v => v.menuAddServerViaClipboard).DisposeWith(disposables);
             this.BindCommand(ViewModel, vm => vm.AddServerViaScanCmd, v => v.menuAddServerViaScan).DisposeWith(disposables);
@@ -95,6 +97,7 @@ public partial class MainWindow
             this.BindCommand(ViewModel, vm => vm.OptionSettingCmd, v => v.menuOptionSetting).DisposeWith(disposables);
             this.BindCommand(ViewModel, vm => vm.RoutingSettingCmd, v => v.menuRoutingSetting).DisposeWith(disposables);
             this.BindCommand(ViewModel, vm => vm.DNSSettingCmd, v => v.menuDNSSetting).DisposeWith(disposables);
+            this.BindCommand(ViewModel, vm => vm.FullConfigTemplateCmd, v => v.menuFullConfigTemplate).DisposeWith(disposables);
             this.BindCommand(ViewModel, vm => vm.GlobalHotkeySettingCmd, v => v.menuGlobalHotkeySetting).DisposeWith(disposables);
             this.BindCommand(ViewModel, vm => vm.RebootAsAdminCmd, v => v.menuRebootAsAdmin).DisposeWith(disposables);
             this.BindCommand(ViewModel, vm => vm.ClearServerStatisticsCmd, v => v.menuClearServerStatistics).DisposeWith(disposables);
@@ -139,7 +142,7 @@ public partial class MainWindow
         }
 
         AddHelpMenuItem();
-        WindowsHandler.Instance.RegisterGlobalHotkey(_config, OnHotkeyHandler, null);
+        WindowsManager.Instance.RegisterGlobalHotkey(_config, OnHotkeyHandler, null);
         MessageBus.Current.Listen<string>(EMsgCommand.AppExit.ToString()).Subscribe(StorageUI);
     }
 
@@ -183,6 +186,9 @@ public partial class MainWindow
 
             case EViewAction.OptionSettingWindow:
                 return (new OptionSettingWindow().ShowDialog() ?? false);
+
+            case EViewAction.FullConfigTemplateWindow:
+                return (new FullConfigTemplateWindow().ShowDialog() ?? false);
 
             case EViewAction.GlobalHotkeySettingWindow:
                 return (new GlobalHotkeySettingWindow().ShowDialog() ?? false);
@@ -333,7 +339,7 @@ public partial class MainWindow
 
         if (Application.Current?.MainWindow is Window window)
         {
-            var bytes = QRCodeHelper.CaptureScreen(window);
+            var bytes = QRCodeUtils.CaptureScreen(window);
             await ViewModel?.ScanScreenResult(bytes);
         }
 
@@ -428,7 +434,7 @@ public partial class MainWindow
 
     private void AddHelpMenuItem()
     {
-        var coreInfo = CoreInfoHandler.Instance.GetCoreInfo();
+        var coreInfo = CoreInfoManager.Instance.GetCoreInfo();
         foreach (var it in coreInfo
             .Where(t => t.CoreType != ECoreType.v2fly
                         && t.CoreType != ECoreType.hysteria))
