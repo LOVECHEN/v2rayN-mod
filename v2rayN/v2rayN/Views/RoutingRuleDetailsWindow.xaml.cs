@@ -1,7 +1,6 @@
 using System.Reactive.Disposables;
 using System.Windows;
 using ReactiveUI;
-using ServiceLib.Manager;
 
 namespace v2rayN.Views;
 
@@ -87,5 +86,19 @@ public partial class RoutingRuleDetailsWindow
     private void linkRuleobjectDoc_Click(object sender, RoutedEventArgs e)
     {
         ProcUtils.ProcessStart("https://xtls.github.io/config/routing.html#ruleobject");
+    }
+
+    private async void BtnSelectProfile_Click(object sender, RoutedEventArgs e)
+    {
+        var selectWindow = new ProfilesSelectWindow();
+        selectWindow.SetConfigTypeFilter(new[] { EConfigType.Custom }, exclude: true);
+        if (selectWindow.ShowDialog() == true)
+        {
+            var profile = await selectWindow.ProfileItem;
+            if (profile != null)
+            {
+                cmbOutboundTag.Text = profile.Remarks;
+            }
+        }
     }
 }

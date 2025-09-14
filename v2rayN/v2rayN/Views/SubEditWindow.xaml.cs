@@ -1,7 +1,6 @@
 using System.Reactive.Disposables;
 using System.Windows;
 using ReactiveUI;
-using ServiceLib.Manager;
 
 namespace v2rayN.Views;
 
@@ -53,5 +52,33 @@ public partial class SubEditWindow
     private void Window_Loaded(object sender, RoutedEventArgs e)
     {
         txtRemarks.Focus();
+    }
+
+    private async void BtnSelectPrevProfile_Click(object sender, RoutedEventArgs e)
+    {
+        var selectWindow = new ProfilesSelectWindow();
+        selectWindow.SetConfigTypeFilter(new[] { EConfigType.Custom }, exclude: true);
+        if (selectWindow.ShowDialog() == true)
+        {
+            var profile = await selectWindow.ProfileItem;
+            if (profile != null)
+            {
+                txtPrevProfile.Text = profile.Remarks;
+            }
+        }
+    }
+
+    private async void BtnSelectNextProfile_Click(object sender, RoutedEventArgs e)
+    {
+        var selectWindow = new ProfilesSelectWindow();
+        selectWindow.SetConfigTypeFilter(new[] { EConfigType.Custom }, exclude: true);
+        if (selectWindow.ShowDialog() == true)
+        {
+            var profile = await selectWindow.ProfileItem;
+            if (profile != null)
+            {
+                txtNextProfile.Text = profile.Remarks;
+            }
+        }
     }
 }

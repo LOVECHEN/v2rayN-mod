@@ -1,7 +1,6 @@
 using System.Reactive;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
-using Splat;
 
 namespace ServiceLib.ViewModels;
 
@@ -136,8 +135,7 @@ public class BackupAndRestoreViewModel : MyReactiveObject
         var result = await CreateZipFileFromDirectory(fileBackup);
         if (result)
         {
-            var service = Locator.Current.GetService<MainWindowViewModel>();
-            await service?.MyAppExitAsync(true);
+            await AppManager.Instance.AppExitAsync(false);
             await SQLiteHelper.Instance.DisposeDbConnectionAsync();
 
             var toPath = Utils.GetConfigPath();
@@ -154,7 +152,7 @@ public class BackupAndRestoreViewModel : MyReactiveObject
                     _ = ProcUtils.ProcessStart(upgradeFileName, Global.RebootAs, Utils.StartupPath());
                 }
             }
-            service?.Shutdown(true);
+            AppManager.Instance.Shutdown(true);
         }
         else
         {

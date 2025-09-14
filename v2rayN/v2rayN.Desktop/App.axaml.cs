@@ -1,7 +1,6 @@
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
-using ServiceLib.Manager;
 using Splat;
 using v2rayN.Desktop.Common;
 using v2rayN.Desktop.Views;
@@ -74,11 +73,7 @@ public partial class App : Application
 
     private async void MenuExit_Click(object? sender, EventArgs e)
     {
-        var service = Locator.Current.GetService<MainWindowViewModel>();
-        if (service != null)
-        {
-            await service.MyAppExitAsync(true);
-        }
-        service?.Shutdown(true);
+        await AppManager.Instance.AppExitAsync(false);
+        AppManager.Instance.Shutdown(true);
     }
 }

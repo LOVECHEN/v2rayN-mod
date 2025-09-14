@@ -1,5 +1,6 @@
 using System.ComponentModel;
 using System.Reactive.Disposables;
+using System.Reactive.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -8,7 +9,6 @@ using System.Windows.Media;
 using System.Windows.Threading;
 using MaterialDesignThemes.Wpf;
 using ReactiveUI;
-using ServiceLib.Manager;
 using Splat;
 using v2rayN.Manager;
 
@@ -35,7 +35,6 @@ public partial class MainWindow
         menuCheckUpdate.Click += MenuCheckUpdate_Click;
         menuBackupAndRestore.Click += MenuBackupAndRestore_Click;
 
-        MessageBus.Current.Listen<string>(EMsgCommand.SendSnackMsg.ToString()).Subscribe(DelegateSnackMsg);
         ViewModel = new MainWindowViewModel(UpdateViewHandler);
         Locator.CurrentMutable.RegisterLazySingleton(() => ViewModel, typeof(MainWindowViewModel));
 
@@ -132,6 +131,24 @@ public partial class MainWindow
                     this.Bind(ViewModel, vm => vm.TabMainSelectedIndex, v => v.tabMain2.SelectedIndex).DisposeWith(disposables);
                     break;
             }
+
+            AppEvents.SendSnackMsgRequested
+              .AsObservable()
+              .ObserveOn(RxApp.MainThreadScheduler)
+              .Subscribe(async content => await DelegateSnackMsg(content))
+              .DisposeWith(disposables);
+
+            AppEvents.AppExitRequested
+              .AsObservable()
+              .ObserveOn(RxApp.MainThreadScheduler)
+              .Subscribe(_ => StorageUI())
+              .DisposeWith(disposables);
+
+            AppEvents.ShutdownRequested
+            .AsObservable()
+            .ObserveOn(RxApp.MainThreadScheduler)
+            .Subscribe(content => Shutdown(content))
+            .DisposeWith(disposables);
         });
 
         this.Title = $"{Utils.GetVersion()} - {(Utils.IsAdministrator() ? ResUI.RunAsAdmin : ResUI.NotRunAsAdmin)}";
@@ -143,7 +160,6 @@ public partial class MainWindow
 
         AddHelpMenuItem();
         WindowsManager.Instance.RegisterGlobalHotkey(_config, OnHotkeyHandler, null);
-        MessageBus.Current.Listen<string>(EMsgCommand.AppExit.ToString()).Subscribe(StorageUI);
     }
 
     #region Event
@@ -156,12 +172,9 @@ public partial class MainWindow
         }));
     }
 
-    private void DelegateSnackMsg(string content)
+    private async Task DelegateSnackMsg(string content)
     {
-        Application.Current?.Dispatcher.Invoke((() =>
-        {
-            MainSnackbar.MessageQueue?.Enqueue(content);
-        }), DispatcherPriority.Normal);
+        MainSnackbar.MessageQueue?.Enqueue(content);
     }
 
     private async Task<bool> UpdateViewHandler(EViewAction action, object? obj)
@@ -203,29 +216,6 @@ public partial class MainWindow
                 }), DispatcherPriority.Normal);
                 break;
 
-            case EViewAction.DispatcherStatistics:
-                if (obj is null)
-                    return false;
-                Application.Current?.Dispatcher.Invoke((() =>
-                {
-                    ViewModel?.SetStatisticsResult((ServerSpeedItem)obj);
-                }), DispatcherPriority.Normal);
-                break;
-
-            case EViewAction.DispatcherReload:
-                Application.Current?.Dispatcher.Invoke((() =>
-                {
-                    ViewModel?.ReloadResult();
-                }), DispatcherPriority.Normal);
-                break;
-
-            case EViewAction.Shutdown:
-                Application.Current?.Dispatcher.Invoke((() =>
-                {
-                    Application.Current.Shutdown();
-                }), DispatcherPriority.Normal);
-                break;
-
             case EViewAction.ScanScreenTask:
                 await ScanScreenTaskAsync();
                 break;
@@ -240,13 +230,6 @@ public partial class MainWindow
                 {
                     ViewModel?.AddServerViaClipboardAsync(clipboardData);
                 }
-                break;
-
-            case EViewAction.AdjustMainLvColWidth:
-                Application.Current?.Dispatcher.Invoke((() =>
-                {
-                    Locator.Current.GetService<ProfilesViewModel>()?.AutofitColumnWidthAsync();
-                }), DispatcherPriority.Normal);
                 break;
         }
 
@@ -280,7 +263,12 @@ public partial class MainWindow
     {
         Logging.SaveLog("Current_SessionEnding");
         StorageUI();
-        await ViewModel?.MyAppExitAsync(true);
+        await AppManager.Instance.AppExitAsync(false);
+    }
+
+    private void Shutdown(bool obj)
+    {
+        Application.Current.Shutdown();
     }
 
     private void MainWindow_PreviewKeyDown(object sender, KeyEventArgs e)
@@ -418,7 +406,7 @@ public partial class MainWindow
         }
     }
 
-    private void StorageUI(string? n = null)
+    private void StorageUI()
     {
         ConfigHandler.SaveWindowSizeItem(_config, GetType().Name, Width, Height);
 
