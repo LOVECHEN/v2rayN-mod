@@ -1,4 +1,4 @@
-﻿<Window
+<Window
     x:Class="v2rayN.Desktop.Views.SubSettingWindow"
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -19,19 +19,14 @@
         CloseOnClickAway="True"
         DisableOpeningAnimation="True"
         Identifier="dialogHostSub">
-        <DockPanel Classes="Margin8">
-            <StackPanel
-                Classes="Margin8"
-                DockPanel.Dock="Top"
-                Orientation="Horizontal">
-                <Menu>
-                    <MenuItem x:Name="menuSubAdd" Header="{x:Static resx:ResUI.menuSubAdd}" />
-                    <MenuItem x:Name="menuSubDelete" Header="{x:Static resx:ResUI.menuSubDelete}" />
-                    <MenuItem x:Name="menuSubEdit" Header="{x:Static resx:ResUI.menuSubEdit}" />
-                    <MenuItem x:Name="menuSubShare" Header="{x:Static resx:ResUI.menuSubShare}" />
-                    <MenuItem x:Name="menuClose" Header="{x:Static resx:ResUI.menuClose}" />
-                </Menu>
-            </StackPanel>
+        <DockPanel Margin="{StaticResource Margin8}">
+            <Menu Margin="{StaticResource Margin4}" DockPanel.Dock="Top">
+                <MenuItem x:Name="menuSubAdd" Header="{x:Static resx:ResUI.menuSubAdd}" />
+                <MenuItem x:Name="menuSubDelete" Header="{x:Static resx:ResUI.menuSubDelete}" />
+                <MenuItem x:Name="menuSubEdit" Header="{x:Static resx:ResUI.menuSubEdit}" />
+                <MenuItem x:Name="menuSubShare" Header="{x:Static resx:ResUI.menuSubShare}" />
+                <MenuItem x:Name="menuClose" Header="{x:Static resx:ResUI.menuClose}" />
+            </Menu>
 
             <DataGrid
                 x:Name="lstSubscription"

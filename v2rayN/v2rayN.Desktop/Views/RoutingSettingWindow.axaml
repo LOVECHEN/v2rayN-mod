@@ -1,4 +1,4 @@
-﻿<Window
+<Window
     x:Class="v2rayN.Desktop.Views.RoutingSettingWindow"
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -15,112 +15,128 @@
     mc:Ignorable="d">
 
     <DockPanel>
-        <StackPanel
-            Classes="Margin8"
-            DockPanel.Dock="Top"
-            Orientation="Horizontal"
-            Spacing="4">
-            <Menu>
-                <MenuItem x:Name="menuRoutingAdvancedAdd2" Header="{x:Static resx:ResUI.menuRoutingAdvancedAdd}" />
-                <MenuItem x:Name="menuRoutingAdvancedImportRules2" Header="{x:Static resx:ResUI.menuRoutingAdvancedImportRules}" />
-            </Menu>
-
-            <TextBlock VerticalAlignment="Center">
-                <HyperlinkButton Classes="WithIcon" Click="linkdomainStrategy_Click">
-                    <TextBlock Text="{x:Static resx:ResUI.TbdomainStrategy}" />
-                </HyperlinkButton>
-            </TextBlock>
-            <ComboBox x:Name="cmbdomainStrategy" Width="110" />
-            <Separator />
-            <TextBlock VerticalAlignment="Center" Text="{x:Static resx:ResUI.TbdomainMatcher}" />
-            <ComboBox x:Name="cmbdomainMatcher" Width="60" />
-            <Separator />
-            <TextBlock VerticalAlignment="Center">
-                <HyperlinkButton Classes="WithIcon" Click="linkdomainStrategy4Singbox_Click">
-                    <TextBlock Text="{x:Static resx:ResUI.TbdomainStrategy4Singbox}" />
-                </HyperlinkButton>
-            </TextBlock>
-            <ComboBox x:Name="cmbdomainStrategy4Singbox" Width="100" />
-        </StackPanel>
+        <Menu Margin="{StaticResource Margin4}" DockPanel.Dock="Top">
+            <MenuItem x:Name="menuRoutingAdvancedAdd2" Header="{x:Static resx:ResUI.menuRoutingAdvancedAdd}" />
+            <MenuItem x:Name="menuRoutingAdvancedImportRules2" Header="{x:Static resx:ResUI.menuRoutingAdvancedImportRules}" />
+        </Menu>
 
         <StackPanel
+            Margin="{StaticResource Margin4}"
             HorizontalAlignment="Right"
-            Classes="Margin8"
             DockPanel.Dock="Bottom"
             Orientation="Horizontal">
-            <StackPanel
-                Width="600"
-                HorizontalAlignment="Left"
-                VerticalAlignment="Center">
-                <TextBlock Text="{x:Static resx:ResUI.TbRoutingTips}" />
-            </StackPanel>
             <Button
                 x:Name="btnSave"
                 Width="100"
                 Content="{x:Static resx:ResUI.TbConfirm}"
-                Cursor="Hand"
                 IsDefault="True" />
             <Button
                 x:Name="btnCancel"
                 Width="100"
-                Margin="8,0"
+                Margin="{StaticResource MarginLr8}"
                 Content="{x:Static resx:ResUI.TbCancel}"
-                Cursor="Hand"
                 IsCancel="True" />
         </StackPanel>
 
-        <DockPanel>
-            <TabControl x:Name="tabAdvanced">
-                <TabItem HorizontalAlignment="Left" Header="{x:Static resx:ResUI.TbRoutingTabRuleList}">
-                    <DataGrid
-                        x:Name="lstRoutings"
-                        AutoGenerateColumns="False"
-                        BorderThickness="1"
-                        CanUserResizeColumns="True"
-                        GridLinesVisibility="All"
-                        HeadersVisibility="Column"
-                        IsReadOnly="True"
-                        ItemsSource="{Binding RoutingItems}">
-                        <DataGrid.KeyBindings>
-                            <KeyBinding Command="{Binding RoutingAdvancedSetDefaultCmd}" Gesture="Enter" />
-                        </DataGrid.KeyBindings>
-                        <DataGrid.ContextMenu>
-                            <ContextMenu>
-                                <MenuItem x:Name="menuRoutingAdvancedAdd" Header="{x:Static resx:ResUI.menuRoutingAdvancedAdd}" />
-                                <MenuItem x:Name="menuRoutingAdvancedRemove" Header="{x:Static resx:ResUI.menuRoutingAdvancedRemove}" />
-                                <MenuItem x:Name="menuRoutingAdvancedSelectAll" Header="{x:Static resx:ResUI.menuSelectAll}" />
-                                <MenuItem x:Name="menuRoutingAdvancedSetDefault" Header="{x:Static resx:ResUI.menuRoutingAdvancedSetDefault}" />
-                                <Separator />
-                                <MenuItem x:Name="menuRoutingAdvancedImportRules" Header="{x:Static resx:ResUI.menuRoutingAdvancedImportRules}" />
-                            </ContextMenu>
-                        </DataGrid.ContextMenu>
+        <Grid
+            Margin="{StaticResource Margin4}"
+            ColumnDefinitions="Auto,Auto"
+            DockPanel.Dock="Top"
+            RowDefinitions="Auto,Auto">
 
-                        <DataGrid.Columns>
-                            <DataGridCheckBoxColumn Width="40" Binding="{Binding IsActive}" />
-                            <DataGridTextColumn
-                                Width="*"
-                                Binding="{Binding Remarks}"
-                                Header="{x:Static resx:ResUI.LvRemarks}" />
-                            <DataGridTextColumn
-                                Width="60"
-                                Binding="{Binding RuleNum}"
-                                Header="{x:Static resx:ResUI.LvCount}" />
-                            <DataGridTextColumn
-                                Width="60"
-                                Binding="{Binding Sort}"
-                                Header="{x:Static resx:ResUI.LvSort}" />
-                            <DataGridTextColumn
-                                Width="*"
-                                Binding="{Binding Url}"
-                                Header="{x:Static resx:ResUI.LvUrl}" />
-                            <DataGridTextColumn
-                                Width="300"
-                                Binding="{Binding CustomIcon}"
-                                Header="{x:Static resx:ResUI.LvCustomIcon}" />
-                        </DataGrid.Columns>
-                    </DataGrid>
-                </TabItem>
-            </TabControl>
-        </DockPanel>
+            <TextBlock
+                Grid.Row="0"
+                Grid.Column="0"
+                Margin="{StaticResource Margin4}"
+                VerticalAlignment="Center">
+                <HyperlinkButton Classes="WithIcon" Click="linkdomainStrategy_Click">
+                    <TextBlock Text="{x:Static resx:ResUI.TbdomainStrategy}" />
+                </HyperlinkButton>
+            </TextBlock>
+            <ComboBox
+                x:Name="cmbdomainStrategy"
+                Grid.Row="0"
+                Grid.Column="1"
+                Width="300"
+                Margin="{StaticResource Margin4}"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Center" />
+
+            <TextBlock
+                Grid.Row="1"
+                Grid.Column="0"
+                Margin="{StaticResource Margin4}"
+                VerticalAlignment="Center">
+                <HyperlinkButton Classes="WithIcon" Click="linkdomainStrategy4Singbox_Click">
+                    <TextBlock Text="{x:Static resx:ResUI.TbdomainStrategy4Singbox}" />
+                </HyperlinkButton>
+            </TextBlock>
+            <ComboBox
+                x:Name="cmbdomainStrategy4Singbox"
+                Grid.Row="1"
+                Grid.Column="1"
+                Width="300"
+                Margin="{StaticResource Margin4}"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Center" />
+        </Grid>
+
+        <TabControl x:Name="tabAdvanced">
+            <TabItem HorizontalAlignment="Left" Header="{x:Static resx:ResUI.TbRoutingTabRuleList}">
+                <DataGrid
+                    x:Name="lstRoutings"
+                    AutoGenerateColumns="False"
+                    Background="Transparent"
+                    BorderThickness="1"
+                    CanUserResizeColumns="True"
+                    GridLinesVisibility="All"
+                    HeadersVisibility="Column"
+                    IsReadOnly="True"
+                    ItemsSource="{Binding RoutingItems}">
+                    <DataGrid.KeyBindings>
+                        <KeyBinding Command="{Binding RoutingAdvancedSetDefaultCmd}" Gesture="Enter" />
+                    </DataGrid.KeyBindings>
+                    <DataGrid.ContextMenu>
+                        <ContextMenu>
+                            <MenuItem x:Name="menuRoutingAdvancedAdd" Header="{x:Static resx:ResUI.menuRoutingAdvancedAdd}" />
+                            <MenuItem
+                                x:Name="menuRoutingAdvancedRemove"
+                                Header="{x:Static resx:ResUI.menuRoutingAdvancedRemove}"
+                                InputGesture="Back" />
+                            <MenuItem
+                                x:Name="menuRoutingAdvancedSelectAll"
+                                Header="{x:Static resx:ResUI.menuSelectAll}"
+                                InputGesture="Ctrl+A" />
+                            <MenuItem
+                                x:Name="menuRoutingAdvancedSetDefault"
+                                Header="{x:Static resx:ResUI.menuRoutingAdvancedSetDefault}"
+                                InputGesture="Enter" />
+                            <Separator />
+                            <MenuItem x:Name="menuRoutingAdvancedImportRules" Header="{x:Static resx:ResUI.menuRoutingAdvancedImportRules}" />
+                        </ContextMenu>
+                    </DataGrid.ContextMenu>
+
+                    <DataGrid.Columns>
+                        <DataGridCheckBoxColumn Width="40" Binding="{Binding IsActive}" />
+                        <DataGridTextColumn
+                            Width="*"
+                            Binding="{Binding Remarks}"
+                            Header="{x:Static resx:ResUI.LvRemarks}" />
+                        <DataGridTextColumn
+                            Width="60"
+                            Binding="{Binding RuleNum}"
+                            Header="{x:Static resx:ResUI.LvCount}" />
+                        <DataGridTextColumn
+                            Width="60"
+                            Binding="{Binding Sort}"
+                            Header="{x:Static resx:ResUI.LvSort}" />
+                        <DataGridTextColumn
+                            Width="*"
+                            Binding="{Binding Url}"
+                            Header="{x:Static resx:ResUI.LvUrl}" />
+                    </DataGrid.Columns>
+                </DataGrid>
+            </TabItem>
+        </TabControl>
     </DockPanel>
 </Window>

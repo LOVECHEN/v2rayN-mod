@@ -1,8 +1,3 @@
-using Avalonia;
-using Avalonia.Controls.ApplicationLifetimes;
-using Avalonia.Markup.Xaml;
-using Splat;
-using v2rayN.Desktop.Common;
 using v2rayN.Desktop.Views;
 
 namespace v2rayN.Desktop;
@@ -11,26 +6,21 @@ public partial class App : Application
 {
     public override void Initialize()
     {
-        if (!AppHandler.Instance.InitApp())
-        {
-            Environment.Exit(0);
-            return;
-        }
         AvaloniaXamlLoader.Load(this);
 
         AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
         TaskScheduler.UnobservedTaskException += TaskScheduler_UnobservedTaskException;
-
-        var ViewModel = new StatusBarViewModel(null);
-        Locator.CurrentMutable.RegisterLazySingleton(() => ViewModel, typeof(StatusBarViewModel));
-        this.DataContext = ViewModel;
     }
 
     public override void OnFrameworkInitializationCompleted()
     {
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
-            AppHandler.Instance.InitComponents();
+            if (!Design.IsDesignMode)
+            {
+                AppManager.Instance.InitComponents();
+                DataContext = StatusBarViewModel.Instance;
+            }
 
             desktop.Exit += OnExit;
             desktop.MainWindow = new MainWindow();
@@ -43,7 +33,7 @@ public partial class App : Application
     {
         if (e.ExceptionObject != null)
         {
-            Logging.SaveLog("CurrentDomain_UnhandledException", (Exception)e.ExceptionObject!);
+            Logging.SaveLog("CurrentDomain_UnhandledException", (Exception)e.ExceptionObject);
         }
     }
 
@@ -62,19 +52,15 @@ public partial class App : Application
         {
             if (desktop.MainWindow != null)
             {
-                var clipboardData = await AvaUtils.GetClipboardData(desktop.MainWindow);
-                var service = Locator.Current.GetService<MainWindowViewModel>();
-                if (service != null)
-                    _ = service.AddServerViaClipboardAsync(clipboardData);
+                AppEvents.AddServerViaClipboardRequested.Publish();
+                await Task.Delay(1000);
             }
         }
     }
 
     private async void MenuExit_Click(object? sender, EventArgs e)
     {
-        var service = Locator.Current.GetService<MainWindowViewModel>();
-        if (service != null)
-            await service.MyAppExitAsync(true);
-        service?.Shutdown(true);
+        await AppManager.Instance.AppExitAsync(false);
+        AppManager.Instance.Shutdown(true);
     }
 }

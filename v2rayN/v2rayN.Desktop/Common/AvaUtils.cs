@@ -1,56 +1,55 @@
-using Avalonia;
-using Avalonia.Controls;
-using Avalonia.Input;
-using Avalonia.Media.Imaging;
-using Avalonia.Platform;
+using Avalonia.Input.Platform;
 
-namespace v2rayN.Desktop.Common
+namespace v2rayN.Desktop.Common;
+
+internal class AvaUtils
 {
-    internal class AvaUtils
+    public static async Task<string?> GetClipboardData(Window owner)
     {
-        public static async Task<string?> GetClipboardData(Window owner)
+        try
         {
-            try
-            {
-                var clipboard = TopLevel.GetTopLevel(owner)?.Clipboard;
-                if (clipboard == null)
-                    return null;
-                return await clipboard.GetTextAsync();
-            }
-            catch
+            var clipboard = TopLevel.GetTopLevel(owner)?.Clipboard;
+            if (clipboard == null)
             {
                 return null;
             }
-        }
 
-        public static async Task SetClipboardData(Visual? visual, string strData)
+            return await clipboard.TryGetTextAsync();
+        }
+        catch
         {
-            try
-            {
-                var clipboard = TopLevel.GetTopLevel(visual)?.Clipboard;
-                if (clipboard == null)
-                    return;
-                var dataObject = new DataObject();
-                dataObject.Set(DataFormats.Text, strData);
-                await clipboard.SetDataObjectAsync(dataObject);
-            }
-            catch
-            {
-            }
+            return null;
         }
+    }
 
-        public static WindowIcon GetAppIcon(ESysProxyType sysProxyType)
+    public static async Task SetClipboardData(Visual? visual, string strData)
+    {
+        try
         {
-            var index = (int)sysProxyType + 1;
-            var fileName = Utils.GetPath($"NotifyIcon{index}.ico");
-            if (File.Exists(fileName))
+            var clipboard = TopLevel.GetTopLevel(visual)?.Clipboard;
+            if (clipboard == null)
             {
-                return new(fileName);
+                return;
             }
 
-            var uri = new Uri(Path.Combine(Global.AvaAssets, $"NotifyIcon{index}.ico"));
-            using var bitmap = new Bitmap(AssetLoader.Open(uri));
-            return new(bitmap);
+            await clipboard.SetTextAsync(strData);
         }
+        catch
+        {
+        }
+    }
+
+    public static WindowIcon GetAppIcon(ESysProxyType sysProxyType)
+    {
+        var index = (int)sysProxyType + 1;
+        var fileName = Utils.GetPath($"NotifyIcon{index}.ico");
+        if (File.Exists(fileName))
+        {
+            return new(fileName);
+        }
+
+        var uri = new Uri(Path.Combine(Global.AvaAssets, $"NotifyIcon{index}.ico"));
+        using var bitmap = new Bitmap(AssetLoader.Open(uri));
+        return new(bitmap);
     }
 }

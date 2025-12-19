@@ -1,8 +1,6 @@
-﻿namespace ServiceLib.Models
+namespace ServiceLib.Models;
+
+[Serializable]
+public class RoutingItemModel : RoutingItem
 {
-    [Serializable]
-    public class RoutingItemModel : RoutingItem
-    {
-        public bool IsActive { get; set; }
-    }
 }

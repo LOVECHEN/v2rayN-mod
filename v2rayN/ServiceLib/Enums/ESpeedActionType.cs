@@ -1,10 +1,10 @@
-﻿namespace ServiceLib.Enums
+namespace ServiceLib.Enums;
+
+public enum ESpeedActionType
 {
-    public enum ESpeedActionType
-    {
-        Tcping,
-        Realping,
-        Speedtest,
-        Mixedtest
-    }
+    Tcping,
+    Realping,
+    Speedtest,
+    Mixedtest,
+    FastRealping
 }

@@ -6,15 +6,14 @@
   "servers": [
     {
       "address": "1.1.1.1",
+      "skipFallback": true,
       "domains": [
-        "geosite:geolocation-!cn"
-      ],
-      "expectIPs": [
-        "geoip:!cn"
+        "geosite:google"
       ]
     },
     {
       "address": "223.5.5.5",
+      "skipFallback": true,
       "domains": [
         "geosite:cn"
       ],
@@ -22,6 +21,7 @@
         "geoip:cn"
       ]
     },
+    "1.1.1.1",
     "8.8.8.8",
     "https://dns.google/dns-query"
   ]

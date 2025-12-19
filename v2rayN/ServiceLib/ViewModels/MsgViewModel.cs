@@ -1,122 +1,111 @@
-using System.Collections.Concurrent;
-using System.Text.RegularExpressions;
-using ReactiveUI;
-using ReactiveUI.Fody.Helpers;
+namespace ServiceLib.ViewModels;
 
-namespace ServiceLib.ViewModels
+public class MsgViewModel : MyReactiveObject
 {
-    public class MsgViewModel : MyReactiveObject
+    private readonly ConcurrentQueue<string> _queueMsg = new();
+    private volatile bool _lastMsgFilterNotAvailable;
+    private int _showLock = 0; // 0 = unlocked, 1 = locked
+    public int NumMaxMsg { get; } = 500;
+
+    [Reactive]
+    public string MsgFilter { get; set; }
+
+    [Reactive]
+    public bool AutoRefresh { get; set; }
+
+    public MsgViewModel(Func<EViewAction, object?, Task<bool>>? updateView)
     {
-        private ConcurrentQueue<string> _queueMsg = new();
-        private int _numMaxMsg = 500;
-        private bool _lastMsgFilterNotAvailable;
-        private bool _blLockShow = false;
+        _config = AppManager.Instance.Config;
+        _updateView = updateView;
+        MsgFilter = _config.MsgUIItem.MainMsgFilter ?? string.Empty;
+        AutoRefresh = _config.MsgUIItem.AutoRefresh ?? true;
 
-        [Reactive]
-        public string MsgFilter { get; set; }
+        this.WhenAnyValue(
+           x => x.MsgFilter)
+               .Subscribe(c => DoMsgFilter());
 
-        [Reactive]
-        public bool AutoRefresh { get; set; }
+        this.WhenAnyValue(
+          x => x.AutoRefresh,
+          y => y == true)
+              .Subscribe(c => _config.MsgUIItem.AutoRefresh = AutoRefresh);
 
-        public MsgViewModel(Func<EViewAction, object?, Task<bool>>? updateView)
+        AppEvents.SendMsgViewRequested
+         .AsObservable()
+         //.ObserveOn(RxApp.MainThreadScheduler)
+         .Subscribe(content => _ = AppendQueueMsg(content));
+    }
+
+    private async Task AppendQueueMsg(string msg)
+    {
+        if (AutoRefresh == false)
         {
-            _config = AppHandler.Instance.Config;
-            _updateView = updateView;
-            MsgFilter = _config.MsgUIItem.MainMsgFilter ?? string.Empty;
-            AutoRefresh = _config.MsgUIItem.AutoRefresh ?? true;
-
-            this.WhenAnyValue(
-               x => x.MsgFilter)
-                   .Subscribe(c => DoMsgFilter());
-
-            this.WhenAnyValue(
-              x => x.AutoRefresh,
-              y => y == true)
-                  .Subscribe(c => { _config.MsgUIItem.AutoRefresh = AutoRefresh; });
-
-            MessageBus.Current.Listen<string>(EMsgCommand.SendMsgView.ToString()).Subscribe(OnNext);
+            return;
         }
 
-        private async void OnNext(string x)
+        EnqueueQueueMsg(msg);
+
+        if (!_config.UiItem.ShowInTaskbar)
         {
-            await AppendQueueMsg(x);
+            return;
         }
 
-        private async Task AppendQueueMsg(string msg)
+        if (Interlocked.CompareExchange(ref _showLock, 1, 0) != 0)
         {
-            //if (msg == Global.CommandClearMsg)
-            //{
-            //    ClearMsg();
-            //    return;
-            //}
-            if (AutoRefresh == false)
-            {
-                return;
-            }
-            _ = EnqueueQueueMsg(msg);
-
-            if (_blLockShow)
-            {
-                return;
-            }
-            if (!_config.UiItem.ShowInTaskbar)
-            {
-                return;
-            }
-
-            _blLockShow = true;
-
-            await Task.Delay(500);
-            var txt = string.Join("", _queueMsg.ToArray());
-            await _updateView?.Invoke(EViewAction.DispatcherShowMsg, txt);
-
-            _blLockShow = false;
+            return;
         }
 
-        private async Task EnqueueQueueMsg(string msg)
+        try
         {
-            //filter msg
-            if (MsgFilter.IsNotEmpty() && !_lastMsgFilterNotAvailable)
+            await Task.Delay(500).ConfigureAwait(false);
+
+            var sb = new StringBuilder();
+            while (_queueMsg.TryDequeue(out var line))
             {
-                try
+                sb.Append(line);
+            }
+
+            await _updateView?.Invoke(EViewAction.DispatcherShowMsg, sb.ToString());
+        }
+        finally
+        {
+            Interlocked.Exchange(ref _showLock, 0);
+        }
+    }
+
+    private void EnqueueQueueMsg(string msg)
+    {
+        //filter msg
+        if (MsgFilter.IsNotEmpty() && !_lastMsgFilterNotAvailable)
+        {
+            try
+            {
+                if (!Regex.IsMatch(msg, MsgFilter))
                 {
-                    if (!Regex.IsMatch(msg, MsgFilter))
-                    {
-                        return;
-                    }
-                }
-                catch (Exception ex)
-                {
-                    _queueMsg.Enqueue(ex.Message);
-                    _lastMsgFilterNotAvailable = true;
+                    return;
                 }
             }
-
-            //Enqueue
-            if (_queueMsg.Count > _numMaxMsg)
+            catch (Exception ex)
             {
-                for (int k = 0; k < _queueMsg.Count - _numMaxMsg; k++)
-                {
-                    _queueMsg.TryDequeue(out _);
-                }
+                _queueMsg.Enqueue(ex.Message);
+                _lastMsgFilterNotAvailable = true;
             }
-            _queueMsg.Enqueue(msg);
-            if (!msg.EndsWith(Environment.NewLine))
-            {
-                _queueMsg.Enqueue(Environment.NewLine);
-            }
-            await Task.CompletedTask;
         }
 
-        public void ClearMsg()
+        _queueMsg.Enqueue(msg);
+        if (!msg.EndsWith(Environment.NewLine))
         {
-            _queueMsg.Clear();
+            _queueMsg.Enqueue(Environment.NewLine);
         }
+    }
 
-        private void DoMsgFilter()
-        {
-            _config.MsgUIItem.MainMsgFilter = MsgFilter;
-            _lastMsgFilterNotAvailable = false;
-        }
+    //public void ClearMsg()
+    //{
+    //    _queueMsg.Clear();
+    //}
+
+    private void DoMsgFilter()
+    {
+        _config.MsgUIItem.MainMsgFilter = MsgFilter;
+        _lastMsgFilterNotAvailable = false;
     }
 }

@@ -2,6 +2,7 @@
     x:Class="v2rayN.Desktop.Views.MsgView"
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:avaloniaEdit="clr-namespace:AvaloniaEdit;assembly=AvaloniaEdit"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:resx="clr-namespace:ServiceLib.Resx;assembly=ServiceLib"
@@ -10,91 +11,81 @@
     mc:Ignorable="d">
     <DockPanel Margin="2">
         <WrapPanel
+            Margin="{StaticResource Margin4}"
             VerticalAlignment="Center"
-            Classes="Margin8"
             DockPanel.Dock="Top"
             Orientation="Horizontal">
 
             <TextBox
                 x:Name="cmbMsgFilter"
                 Width="200"
-                Margin="8,0"
+                Margin="{StaticResource MarginLr8}"
                 VerticalContentAlignment="Center"
                 Watermark="{x:Static resx:ResUI.MsgFilterTitle}" />
 
             <Button
                 x:Name="btnCopy"
-                Width="30"
-                Height="30"
-                Margin="8,0"
-                Classes="Success"
+                Margin="{StaticResource MarginLr8}"
+                Classes="IconButton Success"
                 Click="menuMsgViewCopyAll_Click"
-                Theme="{DynamicResource BorderlessButton}"
                 ToolTip.Tip="{x:Static resx:ResUI.menuMsgViewCopyAll}">
                 <Button.Content>
-                    <PathIcon
-                        Width="20"
-                        Height="20"
-                        Data="{StaticResource building_copy}"
-                        Foreground="{DynamicResource ButtonDefaultTertiaryForeground}" />
+                    <PathIcon Data="{StaticResource SemiIconCopy}" />
                 </Button.Content>
             </Button>
             <Button
                 x:Name="btnClear"
-                Width="30"
-                Height="30"
-                Margin="8,0"
-                Classes="Success"
+                Margin="{StaticResource MarginLr8}"
+                Classes="IconButton Success"
                 Click="menuMsgViewClear_Click"
-                Theme="{DynamicResource BorderlessButton}"
                 ToolTip.Tip="{x:Static resx:ResUI.menuMsgViewClear}">
                 <Button.Content>
-                    <PathIcon
-                        Width="20"
-                        Height="20"
-                        Data="{StaticResource building_delete}"
-                        Foreground="{DynamicResource ButtonDefaultTertiaryForeground}" />
+                    <PathIcon Data="{StaticResource SemiIconDelete}" />
                 </Button.Content>
             </Button>
             <TextBlock
-                Margin="8,0"
+                Margin="{StaticResource MarginLr8}"
                 VerticalAlignment="Center"
                 Text="{x:Static resx:ResUI.TbAutoRefresh}" />
             <ToggleSwitch
                 x:Name="togAutoRefresh"
-                Margin="8,0"
+                Margin="{StaticResource MarginLr8}"
                 HorizontalAlignment="Left"
                 IsChecked="True"
                 Theme="{DynamicResource SimpleToggleSwitch}" />
             <TextBlock
-                Margin="8,0"
+                Margin="{StaticResource MarginLr8}"
                 VerticalAlignment="Center"
                 Text="{x:Static resx:ResUI.TbAutoScrollToEnd}" />
             <ToggleSwitch
                 x:Name="togScrollToEnd"
-                Margin="8,0"
+                Margin="{StaticResource MarginLr8}"
                 HorizontalAlignment="Left"
                 IsChecked="True"
                 Theme="{DynamicResource SimpleToggleSwitch}" />
         </WrapPanel>
-        <TextBox
+
+        <avaloniaEdit:TextEditor
             Name="txtMsg"
-            BorderThickness="0"
-            Classes="TextArea"
+            Margin="{StaticResource Margin8}"
             IsReadOnly="True"
-            TextAlignment="Left"
-            VerticalAlignment="Stretch"
-            TextWrapping="Wrap">
-            <TextBox.ContextMenu>
-                <ContextMenu>
+            VerticalScrollBarVisibility="Auto"
+            WordWrap="True">
+            <avaloniaEdit:TextEditor.Options>
+                <avaloniaEdit:TextEditorOptions AllowScrollBelowDocument="False" />
+            </avaloniaEdit:TextEditor.Options>
+            <avaloniaEdit:TextEditor.ContextFlyout>
+                <MenuFlyout>
                     <MenuItem
                         x:Name="menuMsgViewSelectAll"
                         Click="menuMsgViewSelectAll_Click"
+                        InputGesture="Ctrl+A" 
                         Header="{x:Static resx:ResUI.menuMsgViewSelectAll}" />
                     <MenuItem
                         x:Name="menuMsgViewCopy"
                         Click="menuMsgViewCopy_Click"
-                        Header="{x:Static resx:ResUI.menuMsgViewCopy}" />
+                        Header="{x:Static resx:ResUI.menuMsgViewCopy}"
+                        InputGesture="Ctrl+C" />
                     <MenuItem
                         x:Name="menuMsgViewCopyAll"
                         Click="menuMsgViewCopyAll_Click"
@@ -103,8 +94,9 @@
                         x:Name="menuMsgViewClear"
                         Click="menuMsgViewClear_Click"
                         Header="{x:Static resx:ResUI.menuMsgViewClear}" />
-                </ContextMenu>
-            </TextBox.ContextMenu>
-        </TextBox>
+                </MenuFlyout>
+            </avaloniaEdit:TextEditor.ContextFlyout>
+        </avaloniaEdit:TextEditor>
+
     </DockPanel>
 </UserControl>

@@ -1,11 +1,12 @@
-<reactiveui:ReactiveWindow
+<base:WindowBase
     x:Class="v2rayN.Views.RoutingRuleSettingWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-    xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-    xmlns:reactiveui="http://reactiveui.net"
-    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:base="clr-namespace:v2rayN.Base"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:reactiveui="http://reactiveui.net"
     xmlns:resx="clr-namespace:ServiceLib.Resx;assembly=ServiceLib"
     xmlns:vms="clr-namespace:ServiceLib.ViewModels;assembly=ServiceLib"
     Title="{x:Static resx:ResUI.menuRoutingRuleSetting}"
@@ -75,7 +76,6 @@
                 x:Name="btnSave"
                 Width="100"
                 Content="{x:Static resx:ResUI.TbConfirm}"
-                Cursor="Hand"
                 IsDefault="True"
                 Style="{StaticResource DefButton}" />
             <Button
@@ -83,7 +83,6 @@
                 Width="100"
                 Margin="{StaticResource MarginLeftRight8}"
                 Content="{x:Static resx:ResUI.TbCancel}"
-                Cursor="Hand"
                 IsCancel="true"
                 Style="{StaticResource DefButton}" />
         </StackPanel>
@@ -264,11 +263,13 @@
                             <MenuItem
                                 x:Name="menuRuleRemove"
                                 Height="{StaticResource MenuItemHeight}"
-                                Header="{x:Static resx:ResUI.menuRuleRemove}" />
+                                Header="{x:Static resx:ResUI.menuRuleRemove}"
+                                InputGestureText="Back" />
                             <MenuItem
                                 x:Name="menuRuleSelectAll"
                                 Height="{StaticResource MenuItemHeight}"
-                                Header="{x:Static resx:ResUI.menuSelectAll}" />
+                                Header="{x:Static resx:ResUI.menuSelectAll}"
+                                InputGestureText="Ctrl+A" />
                             <MenuItem
                                 x:Name="menuRuleExportSelected"
                                 Height="{StaticResource MenuItemHeight}"
@@ -277,19 +278,23 @@
                             <MenuItem
                                 x:Name="menuMoveTop"
                                 Height="{StaticResource MenuItemHeight}"
-                                Header="{x:Static resx:ResUI.menuMoveTop}" />
+                                Header="{x:Static resx:ResUI.menuMoveTop}"
+                                InputGestureText="T" />
                             <MenuItem
                                 x:Name="menuMoveUp"
                                 Height="{StaticResource MenuItemHeight}"
-                                Header="{x:Static resx:ResUI.menuMoveUp}" />
+                                Header="{x:Static resx:ResUI.menuMoveUp}"
+                                InputGestureText="U" />
                             <MenuItem
                                 x:Name="menuMoveDown"
                                 Height="{StaticResource MenuItemHeight}"
-                                Header="{x:Static resx:ResUI.menuMoveDown}" />
+                                Header="{x:Static resx:ResUI.menuMoveDown}"
+                                InputGestureText="D" />
                             <MenuItem
                                 x:Name="menuMoveBottom"
                                 Height="{StaticResource MenuItemHeight}"
-                                Header="{x:Static resx:ResUI.menuMoveBottom}" />
+                                Header="{x:Static resx:ResUI.menuMoveBottom}"
+                                InputGestureText="B" />
                         </ContextMenu>
                     </DataGrid.ContextMenu>
                     <DataGrid.Columns>
@@ -302,7 +307,11 @@
                             Binding="{Binding Remarks}"
                             Header="{x:Static resx:ResUI.LvRemarks}" />
                         <DataGridTextColumn
-                            Width="120"
+                            Width="100"
+                            Binding="{Binding RuleTypeName}"
+                            Header="{x:Static resx:ResUI.TbRuleType}" />
+                        <DataGridTextColumn
+                            Width="130"
                             Binding="{Binding OutboundTag}"
                             Header="outboundTag" />
                         <DataGridTextColumn
@@ -318,20 +327,16 @@
                             Binding="{Binding InboundTags}"
                             Header="inboundTag" />
                         <DataGridTextColumn
-                            Width="90"
+                            Width="100"
                             Binding="{Binding Network}"
                             Header="network" />
                         <DataGridTextColumn
                             Width="*"
                             Binding="{Binding Domains}"
-                            Header="domain" />
-                        <DataGridTextColumn
-                            Width="*"
-                            Binding="{Binding Ips}"
-                            Header="ip" />
+                            Header="domain / ip" />
                     </DataGrid.Columns>
                 </DataGrid>
             </TabItem>
         </TabControl>
     </DockPanel>
-</reactiveui:ReactiveWindow>
+</base:WindowBase>

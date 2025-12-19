@@ -1,23 +1,15 @@
 [
   {
-    "remarks": "Google cn",
-    "outboundTag": "proxy",
-    "domain": [
-      "domain:googleapis.cn",
-      "domain:gstatic.com"
-    ]
-  },
-  {
     "remarks": "阻断udp443",
     "outboundTag": "block",
     "port": "443",
     "network": "udp"
   },
   {
-    "remarks": "阻断广告",
-    "outboundTag": "block",
+    "remarks": "代理Google",
+    "outboundTag": "proxy",
     "domain": [
-      "geosite:category-ads-all"
+      "geosite:google"
     ]
   },
   {

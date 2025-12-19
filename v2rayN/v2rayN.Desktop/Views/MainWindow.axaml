@@ -9,8 +9,8 @@
     xmlns:view="using:v2rayN.Desktop.Views"
     xmlns:vms="clr-namespace:ServiceLib.ViewModels;assembly=ServiceLib"
     Title="v2rayN"
-    Width="900"
-    Height="600"
+    Width="1200"
+    Height="800"
     MinWidth="900"
     x:DataType="vms:MainWindowViewModel"
     Icon="/Assets/NotifyIcon1.ico"
@@ -22,38 +22,37 @@
         CloseOnClickAway="True"
         DisableOpeningAnimation="True">
         <DockPanel>
-            <DockPanel Classes="Margin8" DockPanel.Dock="Top">
+            <DockPanel Margin="{StaticResource Margin8}" DockPanel.Dock="Top">
                 <ContentControl x:Name="conTheme" DockPanel.Dock="Right" />
-                <Menu Margin="0,1">
-                    <MenuItem Padding="8,0">
-                        <MenuItem.Header>
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="{x:Static resx:ResUI.menuServers}" />
-                            </StackPanel>
-                        </MenuItem.Header>
-                        <MenuItem x:Name="menuAddServerViaClipboard" Header="{x:Static resx:ResUI.menuAddServerViaClipboard}" />
-                        <MenuItem x:Name="menuAddServerViaScan" Header="{x:Static resx:ResUI.menuAddServerViaScan}" />
+                <Menu Margin="{StaticResource Margin4}">
+                    <MenuItem Header="{x:Static resx:ResUI.menuServers}">
+                        <MenuItem
+                            x:Name="menuAddServerViaClipboard"
+                            Header="{x:Static resx:ResUI.menuAddServerViaClipboard}"
+                            InputGesture="Ctrl+V" />
+                        <MenuItem
+                            x:Name="menuAddServerViaScan"
+                            Header="{x:Static resx:ResUI.menuAddServerViaScan}"
+                            InputGesture="Ctrl+S" />
                         <MenuItem x:Name="menuAddServerViaImage" Header="{x:Static resx:ResUI.menuAddServerViaImage}" />
                         <MenuItem x:Name="menuAddCustomServer" Header="{x:Static resx:ResUI.menuAddCustomServer}" />
+                        <MenuItem x:Name="menuAddPolicyGroupServer" Header="{x:Static resx:ResUI.menuAddPolicyGroupServer}" />
+                        <MenuItem x:Name="menuAddProxyChainServer" Header="{x:Static resx:ResUI.menuAddProxyChainServer}" />
                         <Separator />
                         <MenuItem x:Name="menuAddVmessServer" Header="{x:Static resx:ResUI.menuAddVmessServer}" />
                         <MenuItem x:Name="menuAddVlessServer" Header="{x:Static resx:ResUI.menuAddVlessServer}" />
                         <MenuItem x:Name="menuAddShadowsocksServer" Header="{x:Static resx:ResUI.menuAddShadowsocksServer}" />
+                        <MenuItem x:Name="menuAddTrojanServer" Header="{x:Static resx:ResUI.menuAddTrojanServer}" />
+                        <MenuItem x:Name="menuAddWireguardServer" Header="{x:Static resx:ResUI.menuAddWireguardServer}" />
                         <MenuItem x:Name="menuAddSocksServer" Header="{x:Static resx:ResUI.menuAddSocksServer}" />
                         <MenuItem x:Name="menuAddHttpServer" Header="{x:Static resx:ResUI.menuAddHttpServer}" />
-                        <MenuItem x:Name="menuAddTrojanServer" Header="{x:Static resx:ResUI.menuAddTrojanServer}" />
                         <Separator />
                         <MenuItem x:Name="menuAddHysteria2Server" Header="{x:Static resx:ResUI.menuAddHysteria2Server}" />
                         <MenuItem x:Name="menuAddTuicServer" Header="{x:Static resx:ResUI.menuAddTuicServer}" />
-                        <MenuItem x:Name="menuAddWireguardServer" Header="{x:Static resx:ResUI.menuAddWireguardServer}" />
+                        <MenuItem x:Name="menuAddAnytlsServer" Header="{x:Static resx:ResUI.menuAddAnytlsServer}" />
                     </MenuItem>
 
-                    <MenuItem Padding="8,0">
-                        <MenuItem.Header>
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="{x:Static resx:ResUI.menuSubscription}" />
-                            </StackPanel>
-                        </MenuItem.Header>
+                    <MenuItem Header="{x:Static resx:ResUI.menuSubscription}">
                         <MenuItem x:Name="menuSubSetting" Header="{x:Static resx:ResUI.menuSubSetting}" />
                         <Separator />
                         <MenuItem x:Name="menuSubUpdate" Header="{x:Static resx:ResUI.menuSubUpdate}" />
@@ -62,19 +61,24 @@
                         <MenuItem x:Name="menuSubGroupUpdateViaProxy" Header="{x:Static resx:ResUI.menuSubGroupUpdateViaProxy}" />
                     </MenuItem>
 
-                    <MenuItem Padding="8,0">
-                        <MenuItem.Header>
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="{x:Static resx:ResUI.menuSetting}" />
-                            </StackPanel>
-                        </MenuItem.Header>
+                    <MenuItem Header="{x:Static resx:ResUI.menuSetting}">
                         <MenuItem x:Name="menuOptionSetting" Header="{x:Static resx:ResUI.menuOptionSetting}" />
                         <MenuItem x:Name="menuRoutingSetting" Header="{x:Static resx:ResUI.menuRoutingSetting}" />
                         <MenuItem x:Name="menuDNSSetting" Header="{x:Static resx:ResUI.menuDNSSetting}" />
-                        <MenuItem x:Name="menuGlobalHotkeySetting" Header="{x:Static resx:ResUI.menuGlobalHotkeySetting}" />
+                        <MenuItem x:Name="menuFullConfigTemplate" Header="{x:Static resx:ResUI.menuFullConfigTemplate}" />
+                        <MenuItem
+                            x:Name="menuGlobalHotkeySetting"
+                            Header="{x:Static resx:ResUI.menuGlobalHotkeySetting}"
+                            IsVisible="{Binding BlIsWindows}" />
                         <Separator />
-                        <MenuItem x:Name="menuRebootAsAdmin" Header="{x:Static resx:ResUI.menuRebootAsAdmin}" />
-                        <MenuItem x:Name="menuSettingsSetUWP" Header="{x:Static resx:ResUI.TbSettingsSetUWP}" />
+                        <MenuItem
+                            x:Name="menuRebootAsAdmin"
+                            Header="{x:Static resx:ResUI.menuRebootAsAdmin}"
+                            IsVisible="{Binding BlIsWindows}" />
+                        <MenuItem
+                            x:Name="menuSettingsSetUWP"
+                            Header="{x:Static resx:ResUI.TbSettingsSetUWP}"
+                            IsVisible="{Binding BlIsWindows}" />
                         <MenuItem x:Name="menuClearServerStatistics" Header="{x:Static resx:ResUI.menuClearServerStatistics}" />
                         <Separator />
                         <MenuItem Header="{x:Static resx:ResUI.menuRegionalPresets}">
@@ -86,77 +90,10 @@
                         <MenuItem x:Name="menuOpenTheFileLocation" Header="{x:Static resx:ResUI.menuOpenTheFileLocation}" />
                     </MenuItem>
 
-                    <MenuItem x:Name="menuReload" Padding="8,0">
-                        <MenuItem.Header>
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="{x:Static resx:ResUI.menuReload}" />
-                            </StackPanel>
-                        </MenuItem.Header>
+                    <MenuItem x:Name="menuHelp" Header="{x:Static resx:ResUI.menuHelp}">
+                        <MenuItem x:Name="menuCheckUpdate" Header="{x:Static resx:ResUI.menuCheckUpdate}" />
+                        <Separator />
                     </MenuItem>
 
-                    <MenuItem x:Name="menuCheckUpdate" Header="{x:Static resx:ResUI.menuCheckUpdate}" />
+                    <MenuItem x:Name="menuReload" Header="{x:Static resx:ResUI.menuReload}" />
 
-                    <MenuItem x:Name="menuHelp" Padding="8,0">
-                        <MenuItem.Header>
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="{x:Static resx:ResUI.menuHelp}" />
-                            </StackPanel>
-                        </MenuItem.Header>
-                    </MenuItem>
-
-
-                    <MenuItem x:Name="menuClose" Padding="8,0">
-                        <MenuItem.Header>
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="{x:Static resx:ResUI.menuExit}" />
-                            </StackPanel>
-                        </MenuItem.Header>
-                    </MenuItem>
-                </Menu>
-            </DockPanel>
-
-            <view:StatusBarView DockPanel.Dock="Bottom" />
-
-            <Grid>
-                <Grid
-                    x:Name="gridMain"
-                    ColumnDefinitions="1*,10,1*"
-                    IsVisible="False">
-                    <ContentControl x:Name="tabProfiles" Grid.Column="0" />
-                    <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch" />
-                    <TabControl
-                        x:Name="tabMain"
-                        Grid.Column="2"
-                        HorizontalContentAlignment="Left">
-                        <TabItem x:Name="tabMsgView" Header="{x:Static resx:ResUI.MsgInformationTitle}" />
-                        <TabItem x:Name="tabClashProxies" Header="{x:Static resx:ResUI.TbProxies}" />
-                        <TabItem x:Name="tabClashConnections" Header="{x:Static resx:ResUI.TbConnections}" />
-                    </TabControl>
-                </Grid>
-                <Grid
-                    x:Name="gridMain1"
-                    IsVisible="False"
-                    RowDefinitions="1*,10,1*">
-                    <ContentControl x:Name="tabProfiles1" Grid.Row="0" />
-                    <GridSplitter Grid.Row="1" HorizontalAlignment="Stretch" />
-                    <TabControl
-                        x:Name="tabMain1"
-                        Grid.Row="2"
-                        TabStripPlacement="Left">
-                        <TabItem x:Name="tabMsgView1" Header="{x:Static resx:ResUI.MsgInformationTitle}" />
-                        <TabItem x:Name="tabClashProxies1" Header="{x:Static resx:ResUI.TbProxies}" />
-                        <TabItem x:Name="tabClashConnections1" Header="{x:Static resx:ResUI.TbConnections}" />
-                    </TabControl>
-                </Grid>
-                <Grid x:Name="gridMain2" IsVisible="False">
-                    <TabControl x:Name="tabMain2" TabStripPlacement="Left">
-                        <TabItem x:Name="tabProfiles2" Header="{x:Static resx:ResUI.menuServers}" />
-                        <TabItem x:Name="tabMsgView2" Header="{x:Static resx:ResUI.MsgInformationTitle}" />
-                        <TabItem x:Name="tabClashProxies2" Header="{x:Static resx:ResUI.TbProxies}" />
-                        <TabItem x:Name="tabClashConnections2" Header="{x:Static resx:ResUI.TbConnections}" />
-                    </TabControl>
-                </Grid>
-            </Grid>
-        </DockPanel>
-    </dialogHost:DialogHost>
-</Window>

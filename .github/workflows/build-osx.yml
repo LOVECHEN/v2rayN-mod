@@ -26,23 +26,26 @@ jobs:
 
     steps:
     - name: Checkout
-      uses: actions/checkout@v4.2.2
+      uses: actions/checkout@v6.0.1
+      with:
+        submodules: 'recursive'
+        fetch-depth: '0'
 
     - name: Setup
-      uses: actions/setup-dotnet@v4.3.0
+      uses: actions/setup-dotnet@v5.0.1
       with:
         dotnet-version: '8.0.x'
 
     - name: Build
       run: |
         cd v2rayN 
-        dotnet publish ./v2rayN.Desktop/v2rayN.Desktop.csproj -c Release -r osx-x64   --self-contained=true -p:PublishReadyToRun=false -p:PublishSingleFile=true -o $OutputPath64
-        dotnet publish ./v2rayN.Desktop/v2rayN.Desktop.csproj -c Release -r osx-arm64 --self-contained=true -p:PublishReadyToRun=false -p:PublishSingleFile=true -o $OutputPathArm64
-        dotnet publish ./AmazTool/AmazTool.csproj -c Release -r osx-x64   --self-contained=true -p:PublishReadyToRun=false -p:PublishSingleFile=true -p:PublishTrimmed=true	-o $OutputPath64
-        dotnet publish ./AmazTool/AmazTool.csproj -c Release -r osx-arm64 --self-contained=true -p:PublishReadyToRun=false -p:PublishSingleFile=true -p:PublishTrimmed=true	-o $OutputPathArm64
+        dotnet publish ./v2rayN.Desktop/v2rayN.Desktop.csproj -c Release -r osx-x64   -p:SelfContained=true -o $OutputPath64
+        dotnet publish ./v2rayN.Desktop/v2rayN.Desktop.csproj -c Release -r osx-arm64 -p:SelfContained=true -o $OutputPathArm64
+        dotnet publish ./AmazTool/AmazTool.csproj             -c Release -r osx-x64   -p:SelfContained=true -p:PublishTrimmed=true -o $OutputPath64
+        dotnet publish ./AmazTool/AmazTool.csproj             -c Release -r osx-arm64 -p:SelfContained=true -p:PublishTrimmed=true -o $OutputPathArm64
 
     - name: Upload build artifacts
-      uses: actions/upload-artifact@v4.6.0
+      uses: actions/upload-artifact@v6.0.0
       with:
         name: v2rayN-macos
         path: |

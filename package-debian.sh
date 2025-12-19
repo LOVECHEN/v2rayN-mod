@@ -28,6 +28,7 @@ Package: v2rayN
 Version: $Version
 Architecture: $Arch2
 Maintainer: https://github.com/2dust/v2rayN
+Depends: libc6 (>= 2.34), fontconfig (>= 2.13.1), desktop-file-utils (>= 0.26), xdg-utils (>= 1.1.3), coreutils (>= 8.32), bash (>= 5.1), libfreetype6 (>= 2.11)
 Description: A GUI client for Windows and Linux, support Xray core and sing-box-core and others
 EOF
 
@@ -52,7 +53,17 @@ sudo chmod 0755 "${PackagePath}/DEBIAN/postinst"
 sudo chmod 0755 "${PackagePath}/opt/v2rayN/v2rayN"
 sudo chmod 0755 "${PackagePath}/opt/v2rayN/AmazTool"
 
-# desktop && PATH
+# Patch
+# set owner to root:root
+sudo chown -R root:root "${PackagePath}"
+# set all directories to 755 (readable & traversable by all users)
+sudo find "${PackagePath}/opt/v2rayN" -type d -exec chmod 755 {} +
+# set all regular files to 644 (readable by all users)
+sudo find "${PackagePath}/opt/v2rayN" -type f -exec chmod 644 {} +
+# ensure main binaries are 755 (executable by all users)
+sudo chmod 755 "${PackagePath}/opt/v2rayN/v2rayN" 2>/dev/null || true
+sudo chmod 755 "${PackagePath}/opt/v2rayN/AmazTool" 2>/dev/null || true
 
+# build deb package
 sudo dpkg-deb -Zxz --build $PackagePath
 sudo mv "${PackagePath}.deb" "v2rayN-${Arch}.deb"
