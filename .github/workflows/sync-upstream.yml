@@ -101,6 +101,9 @@ jobs:
         def remove_lines_containing(lines, text):
             return [line for line in lines if text not in line]
 
+        def replace_in_lines(lines, old, new):
+            return [line.replace(old, new) for line in lines]
+
         def remove_method_block(lines, method_signature):
             final_lines = []
             skip_block = False
@@ -177,10 +180,8 @@ jobs:
         # 定义要处理的文件和操作
         operations = {
             'v2rayN/ServiceLib/Global.cs': [
-                ('remove_lines', 'public const string PromotionUrl')
-            ],
-            'v2rayN/ServiceLib/ViewModels/CheckUpdateViewModel.cs': [
-                ('remove_lines', '_checkUpdateModel.Add(GetCheckUpdateModel(_v2rayN));')
+                ('remove_lines', 'public const string PromotionUrl'),
+                ('replace', '"2dust/v2rayN"', '"LOVECHEN/v2rayN-mod"'),
             ],
             'v2rayN/v2rayN.Desktop/Views/MainWindow.axaml': [
                 ('remove_xml', 'x:Name="menuPromotion"')
@@ -208,13 +209,17 @@ jobs:
                 continue
             try:
                 lines = read_file(rel_path)
-                for op_type, text in ops:
+                for op in ops:
+                    op_type = op[0]
+                    text = op[1]
                     if op_type == 'remove_lines':
                         lines = remove_lines_containing(lines, text)
                     elif op_type == 'remove_method':
                         lines = remove_method_block(lines, text)
                     elif op_type == 'remove_xml':
                         lines = remove_xml_block(lines, text)
+                    elif op_type == 'replace':
+                        lines = replace_in_lines(lines, text, op[2])
                     elif op_type == 'remove_menu':
                         lines = remove_menu_block(lines, text)
                     elif op_type == 'remove_duplicate_menu':
