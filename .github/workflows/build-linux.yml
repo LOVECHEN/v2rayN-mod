@@ -9,6 +9,9 @@ on:
   push:
     branches:
       - master
+    tags:
+      - 'v*'
+      - 'V*'
 
 permissions:
   contents: write
@@ -60,7 +63,7 @@ jobs:
         chmod 755 package-release-zip.sh
         ./package-release-zip.sh "$OutputArch" "$OutputPath64"
         ./package-release-zip.sh "$OutputArchArm" "$OutputPathArm64"
-    
+
     - name: Upload zip archive to release
       uses: svenstaro/upload-release-action@v2
       if: github.event.inputs.release_tag != ''
@@ -97,6 +100,12 @@ jobs:
       with:
         submodules: 'recursive'
         fetch-depth: '0'
+
+    - name: Restore build artifacts
+      uses: actions/download-artifact@v7
+      with:
+        name: v2rayN-linux
+        path: ${{ github.workspace }}/v2rayN/Release
 
     - name: Ensure script permissions
       run: chmod 755 package-debian.sh
@@ -208,7 +217,7 @@ jobs:
         fetch-depth: '0'
 
     - name: Restore build artifacts
-      uses: actions/download-artifact@v8
+      uses: actions/download-artifact@v7
       with:
         name: v2rayN-linux
         path: ${{ github.workspace }}/v2rayN/Release
