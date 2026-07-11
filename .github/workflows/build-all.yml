@@ -7,25 +7,13 @@ on:
         required: false
         type: string
 
-permissions: 
-  actions: write
-  contents: write
-
 jobs:
-  public-key:
-    if: inputs.release_tag != ''
-    uses: ./.github/workflows/pub-key.yml
-    with:
-      release_tag: ${{ inputs.release_tag }}
-    secrets:
-      GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
-
   update:
     runs-on: ubuntu-latest
     steps:
 
       - name: Trigger build windows
-        if: inputs.release_tag != ''
+        if: github.event.inputs.release_tag != ''
         run: |
           curl -X POST \
             -H "Accept: application/vnd.github.v3+json" \
@@ -34,12 +22,12 @@ jobs:
             -d "{
               \"ref\": \"master\",
               \"inputs\": {
-                \"release_tag\": \"${{ inputs.release_tag }}\"
+                \"release_tag\": \"${{ github.event.inputs.release_tag }}\"
               }
             }"
 
       - name: Trigger build linux
-        if: inputs.release_tag != ''
+        if: github.event.inputs.release_tag != ''
         run: |
           curl -X POST \
             -H "Accept: application/vnd.github.v3+json" \
@@ -48,12 +36,12 @@ jobs:
             -d "{
               \"ref\": \"master\",
               \"inputs\": {
-                \"release_tag\": \"${{ inputs.release_tag }}\"
+                \"release_tag\": \"${{ github.event.inputs.release_tag }}\"
               }
             }"
 
       - name: Trigger build osx
-        if: inputs.release_tag != ''
+        if: github.event.inputs.release_tag != ''
         run: |
           curl -X POST \
             -H "Accept: application/vnd.github.v3+json" \
@@ -62,12 +50,12 @@ jobs:
             -d "{
               \"ref\": \"master\",
               \"inputs\": {
-                \"release_tag\": \"${{ inputs.release_tag }}\"
+                \"release_tag\": \"${{ github.event.inputs.release_tag }}\"
               }
             }"
 
       - name: Trigger build windows desktop
-        if: inputs.release_tag != ''
+        if: github.event.inputs.release_tag != ''
         run: |
           curl -X POST \
             -H "Accept: application/vnd.github.v3+json" \
@@ -76,20 +64,6 @@ jobs:
             -d "{
               \"ref\": \"master\",
               \"inputs\": {
-                \"release_tag\": \"${{ inputs.release_tag }}\"
-              }
-            }"
-            
-      - name: Trigger build windows x86
-        if: inputs.release_tag != ''
-        run: |
-          curl -X POST \
-            -H "Accept: application/vnd.github.v3+json" \
-            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-            https://api.github.com/repos/${{ github.repository }}/actions/workflows/build-windows-x86.yml/dispatches \
-            -d "{
-              \"ref\": \"master\",
-              \"inputs\": {
-                \"release_tag\": \"${{ inputs.release_tag }}\"
+                \"release_tag\": \"${{ github.event.inputs.release_tag }}\"
               }
             }"
