@@ -1,0 +1,102 @@
+name: Backfill release
+
+# 按指定【上游 tag】构建一个 mod release（自动化手动补建流程）。
+# 用途：sync 检测到上游最新正式版没被 mod 跟上时自动补建；也可手动补历史版本。
+# 流程：拉上游 tag 源码 → 去广告(.github/remove-promotion.py) → 叠加 mod 构建工具 →
+#       推 bf/<tag> 分支 → 建 release(按 prerelease 标记) → 触发 4 平台构建上传。
+# 平台构建工作流 checkout 触发它的 ref，所以必须在带「源码+构建工具」的 bf/<tag> 分支上跑。
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: '上游 tag（同时是要发布到的 mod release），如 7.24.9'
+        required: true
+        type: string
+      prerelease:
+        description: 'release 是否标记为预发布（true/false）'
+        required: false
+        default: 'false'
+        type: string
+
+permissions:
+  contents: write
+  actions: write
+
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout mod master
+      uses: actions/checkout@v6
+      with:
+        fetch-depth: 0
+        token: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Build bf branch (upstream tag + de-promo + build tooling)
+      run: |
+        set -e
+        TAG="${{ github.event.inputs.tag }}"
+        git config user.name "github-actions[bot]"
+        git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+        # 保存 mod 的去广告脚本 + 构建工具（切到上游 tag 后working tree会变成上游的）
+        mkdir -p /tmp/ghsave
+        cp .github/remove-promotion.py /tmp/ghsave/
+        cp .github/package-release-zip.sh /tmp/ghsave/
+        for w in build-windows build-windows-desktop build-linux build-osx; do
+          cp ".github/workflows/$w.yml" /tmp/ghsave/
+        done
+
+        # 拉上游 tag 源码
+        git remote add upstream https://github.com/2dust/v2rayN.git || true
+        git fetch --depth 1 upstream tag "$TAG"
+        git checkout -B "bf/$TAG" "$TAG"
+
+        # 去广告（脚本按 cwd 相对路径操作 v2rayN/...）
+        python3 /tmp/ghsave/remove-promotion.py
+
+        # 叠加 mod 构建工具，清掉上游 workflows（只留我们要 dispatch 的 4 个）
+        rm -rf .github/workflows
+        mkdir -p .github/workflows
+        cp /tmp/ghsave/package-release-zip.sh .github/
+        for w in build-windows build-windows-desktop build-linux build-osx; do
+          cp "/tmp/ghsave/$w.yml" ".github/workflows/"
+        done
+
+        git add -A
+        git commit -m "backfill($TAG): 上游源码 + 去广告 + 构建工具"
+        git push -f origin "bf/$TAG"
+
+    - name: Ensure release exists
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        TAG="${{ github.event.inputs.tag }}"
+        PRE="${{ github.event.inputs.prerelease }}"
+        [ "$PRE" = "true" ] && PREJSON=true || PREJSON=false
+
+        CODE=$(curl -s -o /dev/null -w "%{http_code}" -H "Authorization: token $GH_TOKEN" \
+          "https://api.github.com/repos/${{ github.repository }}/releases/tags/$TAG")
+        if [ "$CODE" = "200" ]; then
+          echo "release $TAG 已存在，跳过创建（构建将以 overwrite 上传）"
+          exit 0
+        fi
+        # 取上游 body 作为发布说明
+        curl -s "https://api.github.com/repos/2dust/v2rayN/releases/tags/$TAG" | jq -r '.body // ""' > /tmp/body.txt || echo "" > /tmp/body.txt
+        jq -n --arg t "$TAG" --arg b "$(cat /tmp/body.txt)" --argjson pre "$PREJSON" \
+          '{tag_name:$t, target_commitish:("bf/"+$t), name:$t, body:$b, draft:false, prerelease:$pre}' > /tmp/payload.json
+        curl -s -X POST -H "Authorization: token $GH_TOKEN" -H "Accept: application/vnd.github+json" \
+          "https://api.github.com/repos/${{ github.repository }}/releases" -d @/tmp/payload.json | jq -r '.html_url // .message'
+
+    - name: Dispatch platform builds
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        TAG="${{ github.event.inputs.tag }}"
+        for wf in build-windows build-windows-desktop build-linux build-osx; do
+          curl -s -X POST -H "Authorization: token $GH_TOKEN" -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/${{ github.repository }}/actions/workflows/$wf.yml/dispatches" \
+            -d "{\"ref\":\"bf/$TAG\",\"inputs\":{\"release_tag\":\"$TAG\"}}"
+          echo "✅ dispatched $wf @ bf/$TAG (release_tag=$TAG)"
+        done
