@@ -369,11 +369,13 @@ jobs:
         if [ "$STABLE_TAG" = "$LATEST_TAG" ]; then
           echo "最新正式版即最新版（由主流程处理），跳过"; exit 0
         fi
-        MOD=$(curl -sS -H "Authorization: token $GH_TOKEN" \
+        # 用 -o 文件 + 对文件 jq；.prerelease 是布尔，绝不能用 `// empty`
+        # （false // empty == empty，会把正式版误判成"没有"→ 每次误触发 backfill）。
+        HTTP=$(curl -sS -o /tmp/mod_rel.json -w "%{http_code}" -H "Authorization: token $GH_TOKEN" \
           "https://api.github.com/repos/${{ github.repository }}/releases/tags/$STABLE_TAG")
-        MOD_ID=$(echo "$MOD" | jq -r '.id // ""')
-        MOD_PRE=$(echo "$MOD" | jq -r '.prerelease // empty')
-        if [ -n "$MOD_ID" ] && [ "$MOD_PRE" = "false" ]; then
+        MOD_ID=$(jq -r '.id // ""' /tmp/mod_rel.json 2>/dev/null)
+        MOD_PRE=$(jq -r '.prerelease' /tmp/mod_rel.json 2>/dev/null)
+        if [ "$HTTP" = "200" ] && [ -n "$MOD_ID" ] && [ "$MOD_PRE" = "false" ]; then
           echo "mod 已有正式版 $STABLE_TAG，无需补建"; exit 0
         fi
         echo "需补建正式版 $STABLE_TAG → dispatch backfill.yml"

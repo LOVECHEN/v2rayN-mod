@@ -50,8 +50,10 @@ jobs:
 
         # 拉上游 tag 源码
         git remote add upstream https://github.com/2dust/v2rayN.git || true
-        git fetch --depth 1 upstream tag "$TAG"
-        git checkout -B "bf/$TAG" "$TAG"
+        # fetch 到 FETCH_HEAD，不建本地 tag ref —— 避免与 mod 已有同名 tag 冲突
+        # （git fetch upstream tag <T> 遇本地已存在 <T> 会 "would clobber" → exit 1 → set -e 挂）
+        git fetch --depth 1 upstream "refs/tags/$TAG"
+        git checkout -B "bf/$TAG" FETCH_HEAD
 
         # 去广告（脚本按 cwd 相对路径操作 v2rayN/...）
         python3 /tmp/ghsave/remove-promotion.py
