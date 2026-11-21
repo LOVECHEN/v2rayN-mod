@@ -6,41 +6,80 @@ on:
       release_tag:
         required: false
         type: string
+      prerelease:
+        description: '可选：手动覆盖发布通道（true/false），留空跟随上游'
+        required: false
+        type: string
   push:
     branches:
       - master
 
-permissions:
-  contents: write
-  actions: read
+env:
+  OutputArch: "windows-64"
+  OutputArchArm: "windows-arm64"
+  OutputPath64:  "${{ github.workspace }}/v2rayN/Release/windows-64"
+  OutputPathArm64:  "${{ github.workspace }}/v2rayN/Release/windows-arm64"
 
 jobs:
   build:
-    uses: ./.github/workflows/build.yml
-    with:
-      target: windows
+    strategy:
+      matrix:
+        configuration: [Release]
 
-  release-zip:
-    if: inputs.release_tag != ''
-    needs: build
-    uses: ./.github/workflows/package-zip.yml
-    with:
-      target: windows-desktop
-      release_tag: ${{ inputs.release_tag }}
-    secrets: inherit
+    runs-on: ubuntu-latest
 
-  build-aot:
-    uses: ./.github/workflows/build.yml
-    with:
-      target: windows
-      isAot: true
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v6.0.2
+      with:
+        submodules: 'recursive'
+        fetch-depth: '0'
 
-  release-aot-zip:
-    if: inputs.release_tag != ''
-    needs: build-aot
-    uses: ./.github/workflows/package-zip.yml
-    with:
-      target: windows-desktop
-      release_tag: ${{ inputs.release_tag }}
-      isAot: true
-    secrets: inherit
+    - name: Setup
+      uses: actions/setup-dotnet@v5.2.0
+      with:
+        dotnet-version: '8.0.x'
+
+    - name: Build
+      run: |
+        cd v2rayN 
+        dotnet publish ./v2rayN.Desktop/v2rayN.Desktop.csproj -c Release -r win-x64   -p:SelfContained=true -p:EnableWindowsTargeting=true -o $OutputPath64
+        dotnet publish ./v2rayN.Desktop/v2rayN.Desktop.csproj -c Release -r win-arm64 -p:SelfContained=true -p:EnableWindowsTargeting=true -o $OutputPathArm64
+        dotnet publish ./AmazTool/AmazTool.csproj             -c Release -r win-x64   -p:SelfContained=true -p:EnableWindowsTargeting=true -p:PublishTrimmed=true -o $OutputPath64
+        dotnet publish ./AmazTool/AmazTool.csproj             -c Release -r win-arm64 -p:SelfContained=true -p:EnableWindowsTargeting=true -p:PublishTrimmed=true -o $OutputPathArm64
+
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v7.0.0
+      with:
+        name: v2rayN-windows-desktop
+        path: |
+          ${{ github.workspace }}/v2rayN/Release/windows*
+
+    # release zip archive
+    - name: Package release zip archive
+      if: github.event.inputs.release_tag != ''
+      run: |
+        chmod 755 .github/package-release-zip.sh
+        .github/package-release-zip.sh $OutputArch $OutputPath64
+        mv "v2rayN-${OutputArch}.zip" "v2rayN-${OutputArch}-desktop.zip"
+        .github/package-release-zip.sh $OutputArchArm $OutputPathArm64
+        mv "v2rayN-${OutputArchArm}.zip" "v2rayN-${OutputArchArm}-desktop.zip"
+
+    - name: Resolve release channel
+      id: release
+      if: github.event.inputs.release_tag != ''
+      uses: ./.github/actions/release-state
+      with:
+        tag: ${{ github.event.inputs.release_tag }}
+        prerelease: ${{ github.event.inputs.prerelease }}
+
+    - name: Upload zip archive to release
+      uses: svenstaro/upload-release-action@v2
+      if: github.event.inputs.release_tag != ''
+      with:
+        file: ${{ github.workspace }}/v2rayN*.zip
+        tag: ${{ github.event.inputs.release_tag }}
+        file_glob: true
+        prerelease: ${{ steps.release.outputs.prerelease }}
+        promote: ${{ steps.release.outputs.prerelease == 'false' }}
+        overwrite: true
