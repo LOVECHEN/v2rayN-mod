@@ -2,8 +2,8 @@ blank_issues_enabled: false
 
 contact_links:
   - name: Discussions / 讨论区
-    url: https://github.com/2dust/v2rayN/discussions
+    url: https://github.com/LOVECHEN/v2rayN-mod/discussions
     about: 使用问题或需要帮助请前往 Discussions。
   - name: Wiki / 使用说明
-    url: https://github.com/2dust/v2rayN/wiki
+    url: https://github.com/LOVECHEN/v2rayN-mod/wiki
     about: 查看常见问题和使用文档。
