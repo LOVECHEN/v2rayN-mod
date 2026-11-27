@@ -1,0 +1,44 @@
+name: Resolve upstream release state
+description: Use the upstream tag's current release channel when uploading assets
+inputs:
+  tag:
+    description: Upstream release tag
+    required: true
+  token:
+    description: GitHub API token
+    default: ${{ github.token }}
+  prerelease:
+    description: Optional explicit channel for manual backfills (true or false)
+    default: ''
+outputs:
+  prerelease:
+    description: Upstream prerelease flag as true or false
+    value: ${{ steps.upstream.outputs.prerelease }}
+runs:
+  using: composite
+  steps:
+    - id: upstream
+      shell: bash
+      env:
+        GH_TOKEN: ${{ inputs.token }}
+        RELEASE_TAG: ${{ inputs.tag }}
+        OVERRIDE_PRE: ${{ inputs.prerelease }}
+      run: |
+        set -euo pipefail
+        # 手动补建的显式选择优先；普通发布默认跟随上游。
+        if [ -n "$OVERRIDE_PRE" ]; then
+          case "$OVERRIDE_PRE" in true|false) ;; *) echo "Invalid prerelease override"; exit 1 ;; esac
+          echo "prerelease=$OVERRIDE_PRE" >> "$GITHUB_OUTPUT"
+          exit 0
+        fi
+        RESPONSE=$(mktemp "$RUNNER_TEMP/release-state.XXXXXX")
+        trap 'rm -f "$RESPONSE"' EXIT
+        TAG_URI=$(jq -rn --arg tag "$RELEASE_TAG" '$tag | @uri')
+        curl --fail-with-body --silent --show-error --retry 3 \
+          -H "Accept: application/vnd.github+json" \
+          -H "Authorization: Bearer $GH_TOKEN" \
+          "https://api.github.com/repos/2dust/v2rayN/releases/tags/$TAG_URI" > "$RESPONSE"
+        # false 必须保留为字符串，不能用 // empty 或直接 jq -e false。
+        PRE=$(jq -er '.prerelease | if type == "boolean" then tostring else error("invalid prerelease flag") end' "$RESPONSE")
+        echo "prerelease=$PRE" >> "$GITHUB_OUTPUT"
+        echo "Upstream $RELEASE_TAG prerelease=$PRE"
